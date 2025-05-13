@@ -1,1 +1,1 @@
-typedef struct attivita *attivita;
+typedef struct attivita_studio *attivita;
