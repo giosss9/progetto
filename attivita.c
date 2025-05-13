@@ -42,3 +42,35 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     return nuova;
 }
 
+
+void stampa_attivita(attivita a) {
+    if (a == NULL) {
+        printf("Attività non valida (NULL)\n");
+        return;
+    }
+
+    printf("Corso: %s\n", a->corso);
+    printf("Descrizione: %s\n", a->descrizione);
+    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza.giorno, a->scadenza.mese, a->scadenza.anno);
+    printf("Tempo stimato: %d ore\n", a->tempo_stimato);
+
+    // Stampa priorità in formato leggibile
+    printf("Priorità: ");
+    switch (a->priorita) {
+        case 0: printf("bassa\n"); break;
+        case 1: printf("media\n"); break;
+        case 2: printf("alta\n"); break;
+        default: printf("sconosciuta\n"); break;
+    }
+
+    // Stampa stato in formato leggibile
+    printf("Stato: ");
+    switch (a->stato) {
+        case 0: printf("non iniziata\n"); break;
+        case 1: printf("in corso\n"); break;
+        case 2: printf("completata\n"); break;
+        default: printf("sconosciuto\n"); break;
+    }
+}
+
+
