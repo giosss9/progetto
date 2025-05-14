@@ -3,7 +3,7 @@
 #include "attivita.h"
 #include "lista.h"
 #define MAX_LINE 512
-
+#define MAX 100
 int main(int argc,char *argv[]){
     if(argc!=2){
         printf("Input invalido\n");
@@ -12,16 +12,19 @@ int main(int argc,char *argv[]){
 
     char *nome_file = argv[1];
 
+    char riga[MAX_LINE];
+    int riga_num=0;
+
     FILE *input = fopen(nome_file, "r");
-    if (file == NULL) {
+    if (input == NULL) {
         printf("Impossibile aprire il file %s\n", nome_file);
         return 1;
     }
 
     lista l = nuova_lista();
-    char riga[MAX_LINE];
 
-    while (fgets(riga, MAX_LINE, file) != NULL) {
+    //Inserimento da file input
+    while (fgets(riga, MAX_LINE, input) != NULL) {
         riga_num++;
 
         char descrizione[MAX], corso[MAX];
@@ -60,11 +63,10 @@ int main(int argc,char *argv[]){
         l = cons_lista(nuova, l);
     }
 
-    fclose(file);
+    fclose(input);
 
     printf("Attività lette dal file:\n");
     stampa_lista(l);
-
 
 
 }

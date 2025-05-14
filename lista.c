@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "attivita.h"
-#include "list.h"
+#include "lista.h"
 
 struct nodo {
     attivita valore;

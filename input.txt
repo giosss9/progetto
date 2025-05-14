@@ -1,0 +1,2 @@
+Studiare C;Programmazione;20;05;2025;3;2;0
+Fare esercizi;Matematica;22;05;2025;2;1;1
