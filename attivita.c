@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "attivita.h"
 
 #define MAX 100
@@ -42,7 +43,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     return nuova;
 }
 
-
+//Funzione che stampa l'attivita passata come argomento e non restituisce niente
 void stampa_attivita(attivita a) {
     if (a == NULL) {
         printf("Attività non valida (NULL)\n");
