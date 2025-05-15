@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "attivita.h"
+#include "data.h"
 
 #define MAX 100
 //Definizione tipo data che servirà per la scadenza dell'attività
@@ -18,6 +19,7 @@ struct attivita_studio {
     int tempo_stimato;
     int priorita;        //0=bassa 1=media 2=alta
     int stato;          //0=non iniziata 1=in corso 2=completata
+    data_ora tempo_creazione; //per tenere conto del tempo trascorso
 };
 
 // Funzione che crea e restituisce una nuova attività.
@@ -41,6 +43,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     nuova->priorita = pr;
     nuova->stato = st;
 
+    nuova->tempo_creazione = ottieni_data_ora();
     return nuova;
 }
 
@@ -74,5 +77,13 @@ void stampa_attivita(attivita a) {
         default: printf("sconosciuto\n"); break;
     }
 }
+
+int confronta_descrizione(attivita a, const char *descrizione){
+    int verifica=0;
+    if (strcmp(a->descrizione, descrizione) == 0)
+            verifica=1;
+    return verifica;
+}
+
 
 
