@@ -26,4 +26,5 @@ int dimensione_lista(lista l);
 // Stampa tutti gli elementi contenuti nella lista
 void stampa_lista(lista l);
 
-
+//Funzione che data una lista cerca un'attivita per la sua descrizione
+attivita cerca_attivita_per_descrizione(lista l, const char *descrizione);

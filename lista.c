@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "attivita.h"
 #include "lista.h"
 
@@ -63,3 +64,17 @@ void stampa_lista(lista l) {
     }
     printf("\n");
 }
+
+//Funzione che data una lista cerca un'attivita per la sua descrizione
+attivita cerca_attivita_per_descrizione(lista l,const char *descrizione) {
+    int verifica;
+    while (l != NULL) {
+        verifica=confronta_descrizione(l->valore,descrizione);
+        if (verifica==1) {
+            return l->valore;  // Trovata: restituisce l'attività
+        }
+        l = l->successivo;
+    }
+    return NULLITEM;  // Costante che rappresenta "nessuna attività"
+}
+
