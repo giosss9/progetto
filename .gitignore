@@ -1,0 +1,6 @@
+# Oggetti compilati
+*.o
+
+# Eseguibili
+*.out
+main.out
