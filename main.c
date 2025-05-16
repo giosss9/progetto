@@ -46,7 +46,8 @@ int main(int argc,char *argv[]){
             anno <= 0 ||
             tempo_stimato <= 0 ||
             priorita < 0 || priorita > 2 ||
-            stato < 0 || stato > 2) {
+            stato < 0 || stato > 1) { 		//lo stato deve partire da non iniziare o in corso, un'attivita non può
+											//essere completata all'inserimento
 
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
             fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
@@ -67,6 +68,7 @@ int main(int argc,char *argv[]){
 
     printf("Attività lette dal file:\n");
     stampa_lista(l);
+
 
 
 }
