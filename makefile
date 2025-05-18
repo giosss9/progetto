@@ -1,14 +1,14 @@
-main.out: main.o attivita.o lista.o
-	gcc main.o attivita.o lista.o -o main.out
+main.out: main.o attivita.o lista.o data.o
+	gcc main.o attivita.o lista.o data.o -o main.out
 
-attivita.o: attivita.c attivita.h
+attivita.o: attivita.c attivita.h data.o
 	gcc -c ./attivita.c
 
 lista.o: lista.c lista.h attivita.o
 	gcc -c ./lista.c
 
-main.o: main.c attivita.o lista.o
-	gcc -c ./main.c -std=c99
+data.o: data.c data.h
+	gcc -c data.c
 
-clean:
-	rm -f *.o *.out
+main.o: main.c attivita.o lista.o data.o
+	gcc -c ./main.c -std=c99

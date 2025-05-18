@@ -121,8 +121,3 @@ int confronta_descrizione(attivita a, const char *descrizione){
             verifica=1;
     return verifica;
 }
-
-
-
-
-
