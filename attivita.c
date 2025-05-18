@@ -6,16 +6,12 @@
 
 #define MAX 100
 //Definizione tipo data che servirà per la scadenza dell'attività
-typedef struct {
-    int giorno;
-    int mese;
-    int anno;
-}data;
+
 
 struct attivita_studio {
     char descrizione[MAX];
     char corso[MAX];
-    data scadenza;
+    data_ora scadenza;
     int tempo_stimato;
     int priorita;        //0=bassa 1=media 2=alta
     int stato;          //0=non iniziata 1=in corso 2=completata
@@ -32,13 +28,23 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
         return NULL;
     }
 
+	nuova->scadenza = (data_ora) malloc(sizeof(data_ora));
+    if (nuova->scadenza == NULL) {
+        printf("Errore di allocazione memoria per scadenza\n");
+        free(nuova);
+        return NULL;
+    }
+
     strncpy(nuova->descrizione, d, MAX - 1);
     nuova->descrizione[MAX - 1] = '\0';
     strncpy(nuova->corso, c, MAX - 1);
     nuova->corso[MAX - 1] = '\0';
-    nuova->scadenza.giorno = g;
-    nuova->scadenza.mese = m;
-    nuova->scadenza.anno = a;
+    nuova->scadenza->giorno = g;
+    nuova->scadenza->mese = m;
+    nuova->scadenza->anno = a;
+	nuova->scadenza->ore=0;
+	nuova->scadenza->minuti=0;
+	nuova->scadenza->secondi=0;
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
     nuova->stato = st;
@@ -56,7 +62,7 @@ void stampa_attivita(attivita a) {
 
     printf("Corso: %s\n", a->corso);
     printf("Descrizione: %s\n", a->descrizione);
-    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza.giorno, a->scadenza.mese, a->scadenza.anno);
+    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza->giorno, a->scadenza->mese, a->scadenza->anno);
     printf("Tempo stimato: %d ore\n", a->tempo_stimato);
 
     // Stampa priorità in formato leggibile
@@ -78,12 +84,45 @@ void stampa_attivita(attivita a) {
     }
 }
 
+
+//Funzioni che ritornano le variabili di attivita
+char* rit_descrizione(attivita a) {
+    return a->descrizione;
+}
+
+char* rit_corso(attivita a) {
+    return a->corso;
+}
+
+data_ora rit_scadenza(attivita a) {
+    return a->scadenza;
+}
+
+int rit_tempo_stimato(attivita a) {
+    return a->tempo_stimato;
+}
+
+int rit_priorita(attivita a) {
+    return a->priorita;
+}
+
+int rit_stato(attivita a) {
+    return a->stato;
+}
+
+data_ora rit_tempo_creazione(attivita a) {
+    return a->tempo_creazione;
+}
+
+
 int confronta_descrizione(attivita a, const char *descrizione){
     int verifica=0;
     if (strcmp(a->descrizione, descrizione) == 0)
             verifica=1;
     return verifica;
 }
+
+
 
 
 
