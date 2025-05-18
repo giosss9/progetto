@@ -1,7 +1,18 @@
-typedef struct data_e_ora *data_ora;
+#ifndef DATA_H
+#define DATA_H
 
-//Funzione per estrapolare la data e l'ora corrente restituisce la struttura data_ora
+typedef struct data_e_ora {
+    int giorno;
+    int mese;
+    int anno;
+    int ore;
+    int minuti;
+    int secondi;
+} data_e_ora;
+
+typedef data_e_ora* data_ora;
+
 data_ora ottieni_data_ora();
-
-// Calcola la differenza tra una data e un orario passato come argomento e la data e l'orario attuale, ritorna il risultato
 data_ora calcolo_tempo_trascorso(data_ora inizio);
+
+#endif // DATA_H
