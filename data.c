@@ -64,3 +64,26 @@ data_ora calcolo_tempo_trascorso(data_ora inizio) {
 
     return risultato;
 }
+//Funzione che confronta due strutture data_ora passate come argomento
+// Restituisce:
+//  -1 se a < b
+//   0 se a == b
+//   1 se a > b
+int confronta_data_ora(data_ora a, data_ora b) {
+
+
+    if (a.anno != b.anno)
+        return (a.anno > b.anno) ? 1 : -1;
+    if (a.mese != b.mese)
+        return (a.mese > b.mese) ? 1 : -1;
+    if (a.giorno != b.giorno)
+        return (a.giorno > b.giorno) ? 1 : -1;
+    if (a.ore != b.ore)
+        return (a.ore > b.ore) ? 1 : -1;
+    if (a.minuti != b.minuti)
+        return (a.minuti > b.minuti) ? 1 : -1;
+    if (a.secondi != b.secondi)
+        return (a.secondi > b.secondi) ? 1 : -1;
+
+    return 0;
+}
