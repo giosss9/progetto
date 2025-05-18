@@ -2,6 +2,8 @@
 #include <string.h>
 #include "attivita.h"
 #include "lista.h"
+#include "utile.h"
+
 #define MAX_LINE 512
 #define MAX 100
 int main(int argc,char *argv[]){
@@ -28,7 +30,7 @@ int main(int argc,char *argv[]){
         riga_num++;
 
         char descrizione[MAX], corso[MAX];
-        int giorno, mese, anno, tempo_stimato, priorita, stato;
+        int giorno, mese, anno, tempo_stimato, priorita, stato, ore;
 
         riga[strcspn(riga, "\n")] = 0;
 
@@ -46,12 +48,14 @@ int main(int argc,char *argv[]){
             anno <= 0 ||
             tempo_stimato <= 0 ||
             priorita < 0 || priorita > 2 ||
-            stato < 0 || stato > 1) { 		//lo stato deve partire da non iniziare o in corso, un'attivita non può
-											//essere completata all'inserimento
+            stato < 0 || stato > 1 ||  			//lo stato deve partire da non iniziare o in corso, un'attivita non può
+			ore<0 || ore >24) { 									//essere completata all'inserimento
+
 
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
             fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
             fprintf(stderr, "  Mese: %d (1-12)\n", mese);
+			fprintf(stderr, "  Ore: %d (0-24)\n", mese);
             fprintf(stderr, "  Anno: %d (>0)\n", anno);
             fprintf(stderr, "  Tempo stimato: %d (>0)\n", tempo_stimato);
             fprintf(stderr, "  Priorità: %d (0=bassa, 1=media, 2=alta)\n", priorita);
@@ -60,7 +64,7 @@ int main(int argc,char *argv[]){
         }
 
         attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
-                                   tempo_stimato, priorita, stato);
+                                   tempo_stimato, priorita, stato,ore);
         l = cons_lista(nuova, l);
     }
 

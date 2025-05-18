@@ -5,8 +5,6 @@
 #include "data.h"
 
 #define MAX 100
-//Definizione tipo data che servirà per la scadenza dell'attività
-
 
 struct attivita_studio {
     char descrizione[MAX];
@@ -21,17 +19,10 @@ struct attivita_studio {
 // Funzione che crea e restituisce una nuova attività.
 // I parametri includono descrizione, corso, data di scadenza, tempo stimato,
 // priorità e stato. Restituisce una struttura `attivita` inizializzata.
-attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int st){
+attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int st,int ore){
     attivita nuova = (attivita)malloc(sizeof(struct attivita_studio));
     if (nuova == NULL) {
         printf("Errore di allocazione memoria\n");
-        return NULL;
-    }
-
-	nuova->scadenza = (data_ora) malloc(sizeof(data_ora));
-    if (nuova->scadenza == NULL) {
-        printf("Errore di allocazione memoria per scadenza\n");
-        free(nuova);
         return NULL;
     }
 
@@ -39,17 +30,19 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     nuova->descrizione[MAX - 1] = '\0';
     strncpy(nuova->corso, c, MAX - 1);
     nuova->corso[MAX - 1] = '\0';
-    nuova->scadenza->giorno = g;
-    nuova->scadenza->mese = m;
-    nuova->scadenza->anno = a;
-	nuova->scadenza->ore=0;
-	nuova->scadenza->minuti=0;
-	nuova->scadenza->secondi=0;
+
+    nuova->scadenza.giorno = g;
+    nuova->scadenza.mese = m;
+    nuova->scadenza.anno = a;
+    nuova->scadenza.ore = ore;
+    nuova->scadenza.minuti = 0;
+    nuova->scadenza.secondi = 0;
+
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
     nuova->stato = st;
 
-    nuova->tempo_creazione = ottieni_data_ora();
+    nuova->tempo_creazione = ottieni_data_ora(); // funzione che restituisce una data_ora
     return nuova;
 }
 
@@ -62,7 +55,7 @@ void stampa_attivita(attivita a) {
 
     printf("Corso: %s\n", a->corso);
     printf("Descrizione: %s\n", a->descrizione);
-    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza->giorno, a->scadenza->mese, a->scadenza->anno);
+    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza.giorno, a->scadenza.mese, a->scadenza.anno);
     printf("Tempo stimato: %d ore\n", a->tempo_stimato);
 
     // Stampa priorità in formato leggibile
