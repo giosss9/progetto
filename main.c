@@ -34,10 +34,10 @@ int main(int argc,char *argv[]){
 
         riga[strcspn(riga, "\n")] = 0;
 
-        if (sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d",
+        if (sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d;%d",
                    descrizione, corso,
-                   &giorno, &mese, &anno,
-                   &tempo_stimato, &priorita, &stato) != 8) {
+                   &giorno, &mese, &anno, &ore,
+                   &tempo_stimato, &priorita, &stato) != 9) {
             fprintf(stderr, "Riga %d: formato riga non valido: %s\n", riga_num, riga);
             break;
                    }
@@ -55,11 +55,11 @@ int main(int argc,char *argv[]){
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
             fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
             fprintf(stderr, "  Mese: %d (1-12)\n", mese);
-			fprintf(stderr, "  Ore: %d (0-24)\n", mese);
+			fprintf(stderr, "  Ore: %d (0-24)\n", ore);
             fprintf(stderr, "  Anno: %d (>0)\n", anno);
             fprintf(stderr, "  Tempo stimato: %d (>0)\n", tempo_stimato);
             fprintf(stderr, "  Priorità: %d (0=bassa, 1=media, 2=alta)\n", priorita);
-            fprintf(stderr, "  Stato: %d (0=non iniziata, 1=in corso, 2=completata)\n", stato);
+            fprintf(stderr, "  Stato: %d (0=non iniziata, 1=in corso)\n", stato);
             break;
         }
 

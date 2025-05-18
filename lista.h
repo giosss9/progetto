@@ -1,5 +1,12 @@
+#ifndef LISTA_H
+#define LISTA_H
+
 #include "attivita.h"
 
+struct nodo {
+    attivita valore;
+    struct nodo *successivo;
+};
 // Definizione del tipo lista (puntatore a nodo)
 typedef struct nodo* lista;
 
@@ -28,3 +35,5 @@ void stampa_lista(lista l);
 
 //Funzione che data una lista cerca un'attivita per la sua descrizione
 attivita cerca_attivita_per_descrizione(lista l, const char *descrizione);
+
+#endif

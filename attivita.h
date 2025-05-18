@@ -3,7 +3,7 @@
 
 typedef struct attivita_studio *attivita;
 
-attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int st);
+attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int st, int ore);
 void stampa_attivita(attivita a);
 
 int confronta_descrizione(attivita a, const char *descrizione);

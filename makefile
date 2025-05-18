@@ -10,5 +10,9 @@ lista.o: lista.c lista.h attivita.o
 data.o: data.c data.h
 	gcc -c data.c
 
-main.o: main.c attivita.o lista.o data.o
+utile.o:utile.c utile.h attivita.o lista.o data.o
+	gcc -c utile.c
+
+main.o: main.c attivita.o lista.o data.o utile.o
 	gcc -c ./main.c -std=c99
+
