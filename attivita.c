@@ -12,7 +12,7 @@ struct attivita_studio {
     data_ora scadenza;
     int tempo_stimato;
     int priorita;        //0=bassa 1=media 2=alta
-    int stato;          //0=non iniziata 1=in corso 2=completata
+    int stato;          //0=non iniziata 1=in corso 2=completata 3=in ritardo
     data_ora tempo_creazione; //per tenere conto del tempo trascorso
 };
 
@@ -113,4 +113,8 @@ int confronta_descrizione(attivita a, const char *descrizione){
     if (strcmp(a->descrizione, descrizione) == 0)
             verifica=1;
     return verifica;
+}
+
+void imposta_stato(attivita a, int stato) {
+    a->stato = stato;
 }

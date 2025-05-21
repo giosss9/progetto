@@ -15,3 +15,5 @@ int rit_tempo_stimato(attivita a);
 int rit_priorita(attivita a);
 int rit_stato(attivita a);
 data_ora rit_tempo_creazione(attivita a);
+
+void imposta_stato(attivita a, int stato);
