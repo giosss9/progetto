@@ -50,6 +50,9 @@ int dimensione_lista(lista l) {
 }
 
 void stampa_lista(lista l) {
+	if (lista_vuota(l)) {
+    	printf("La lista è vuota.\n");
+	}
     while (l != NULL) {
         stampa_attivita(l->valore);
         printf(" ");
@@ -57,17 +60,22 @@ void stampa_lista(lista l) {
     }
     printf("\n");
 }
+attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
+    if (lista_vuota(l)) {
+        printf("La lista è vuota.\n");
+        return NULLITEM;
+    }
 
-//Funzione che data una lista cerca un'attivita per la sua descrizione
-attivita cerca_attivita_per_descrizione(lista l,const char *descrizione) {
     int verifica;
     while (l != NULL) {
-        verifica=confronta_descrizione(l->valore,descrizione);
-        if (verifica==1) {
-            return l->valore;  // Trovata: restituisce l'attività
+        if (l->valore != NULL) {
+            verifica = confronta_descrizione(l->valore, descrizione);
+            if (verifica == 1)
+                return l->valore;
         }
         l = l->successivo;
     }
-    return NULLITEM;  // Costante che rappresenta "nessuna attività"
+
+    return NULLITEM;
 }
 
