@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <strings.h> // per strcasestr
 #include "attivita.h"
 #include "data.h"
 
@@ -107,13 +108,16 @@ data_ora rit_tempo_creazione(attivita a) {
     return a->tempo_creazione;
 }
 
-
-int confronta_descrizione(attivita a, const char *descrizione){
-    int verifica=0;
-    if (strcmp(a->descrizione, descrizione) == 0)
-            verifica=1;
-    return verifica;
+// Confronta la descrizione dell'attività con quella fornita esattamente (case-sensitive).
+// Restituisce 1 se le stringhe coincidono perfettamente, altrimenti 0.
+// Gestisce anche eventuali puntatori NULL per evitare errori di segmentazione.
+int confronta_descrizione(attivita a, const char *descrizione) {
+    if (a == NULL || a->descrizione == NULL || descrizione == NULL) {
+        return 0;
+    }
+    return strcmp(a->descrizione, descrizione) == 0;
 }
+
 
 void imposta_stato(attivita a, int stato) {
     a->stato = stato;
