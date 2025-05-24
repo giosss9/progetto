@@ -1,5 +1,5 @@
-main.out: main.o attivita.o lista.o data.o
-	gcc main.o attivita.o lista.o data.o -o main.out
+main.out: main.o attivita.o lista.o data.o utile.o
+	gcc main.o attivita.o lista.o data.o utile.o -o main.out
 
 attivita.o: attivita.c attivita.h data.o
 	gcc -c ./attivita.c
