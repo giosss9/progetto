@@ -6,6 +6,58 @@
 
 #define MAX_LINE 512
 #define MAX 100
+
+void menu(lista l) {
+    int scelta;
+    do {
+        printf("\n======== MENU ========\n");
+        printf("1. Visualizza attività\n");
+        printf("2. Mostra stato avanzamento\n");
+        printf("3. Aggiorna stato\n");
+        printf("0. Esci\n");
+        printf("======================\n");
+        printf("Scelta: ");
+        scanf("%d", &scelta);
+        getchar(); // per consumare il newline
+
+        switch (scelta) {
+            case 1:
+                stampa_lista(l);
+                break;
+            case 2:
+                mostra_progresso(l);
+                break;
+            case 3:
+				char descrizione[MAX];
+				int nuovo,v=1, k=1;
+				attivita a;
+				while(v==1){
+					while(k==1){
+						printf("Inserisci la descrizione dell'attivita che vuoi aggiornare: \n");
+						fgets(descrizione,MAX,stdin);
+						descrizione[strcspn(descrizione, "\n")] = 0;
+						a=cerca_attivita_per_descrizione(l,descrizione);
+						if(a==NULLITEM)
+							printf("Attività non trovata.\n");
+						else
+							k=0;
+					}
+					printf("Inserisci il nuovo stato dell'attivita [1=in corso, 2=completata]: \n");
+					scanf("%d",&nuovo);
+					v=aggiorna_stato(a,nuovo);
+				}
+
+				break;
+			case 0:
+                printf("Uscita in corso...\n");
+                break;
+            default:
+                printf("Scelta non valida.\n");
+        }
+    } while (scelta != 0);
+}
+
+
 int main(int argc,char *argv[]){
     if(argc!=2){
         printf("Input invalido\n");
@@ -49,7 +101,7 @@ int main(int argc,char *argv[]){
             tempo_stimato <= 0 ||
             priorita < 0 || priorita > 2 ||
             stato < 0 || stato > 1 ||  			//lo stato deve partire da non iniziare o in corso, un'attivita non può
-			ore<0 || ore >24) { 									//essere completata all'inserimento
+			ore<0 || ore >24) { 				//essere completata o in ritardo dall'inserimento
 
 
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
@@ -70,9 +122,7 @@ int main(int argc,char *argv[]){
 
     fclose(input);
 
-    printf("Attività lette dal file:\n");
-    stampa_lista(l);
-
+	menu(l);
 
 
 }
