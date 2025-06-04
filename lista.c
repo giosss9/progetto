@@ -49,17 +49,28 @@ int dimensione_lista(lista l) {
     return conta;
 }
 
-void stampa_lista(lista l) {
-	if (lista_vuota(l)) {
-    	printf("La lista è vuota.\n");
-	}
+void stampa_lista_per_stato(lista l, int stato_richiesto) {
+    if (lista_vuota(l)) {
+        printf("La lista è vuota.\n");
+        return;
+    }
+
+    int trovata = 0;
     while (l != NULL) {
-        stampa_attivita(l->valore);
-        printf(" ");
+        if (rit_stato(l->valore) == stato_richiesto) {
+            stampa_attivita(l->valore);
+            trovata = 1;
+        }
         l = l->successivo;
     }
+
+    if (!trovata) {
+        printf("Nessuna attività trovata con lo stato richiesto (%d).\n", stato_richiesto);
+    }
+
     printf("\n");
 }
+
 attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
     if (lista_vuota(l)) {
         printf("La lista è vuota.\n");

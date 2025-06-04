@@ -32,12 +32,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     strncpy(nuova->corso, c, MAX - 1);
     nuova->corso[MAX - 1] = '\0';
 
-    nuova->scadenza.giorno = g;
-    nuova->scadenza.mese = m;
-    nuova->scadenza.anno = a;
-    nuova->scadenza.ore = ore;
-    nuova->scadenza.minuti = 0;
-    nuova->scadenza.secondi = 0;
+	nuova->scadenza = crea_data_ora(g, m, a, ore, 0, 0);
 
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
@@ -56,7 +51,7 @@ void stampa_attivita(attivita a) {
 
     printf("Corso: %s\n", a->corso);
     printf("Descrizione: %s\n", a->descrizione);
-    printf("Scadenza: %02d/%02d/%04d\n", a->scadenza.giorno, a->scadenza.mese, a->scadenza.anno);
+    printf("Scadenza: %02d/%02d/%04d\n", rit_giorno(a->scadenza), rit_mese(a->scadenza), rit_anno(a->scadenza));
     printf("Tempo stimato: %d ore\n", a->tempo_stimato);
 
     // Stampa priorità in formato leggibile
@@ -76,6 +71,7 @@ void stampa_attivita(attivita a) {
         case 2: printf("completata\n"); break;
         default: printf("sconosciuto\n"); break;
     }
+    printf("-----------------------------------\n");
 }
 
 

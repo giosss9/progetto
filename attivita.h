@@ -1,3 +1,6 @@
+#ifndef ATTIVITA_H
+#define ATTIVITA_H
+
 #include "data.h"
 #define NULLITEM NULL
 
@@ -17,3 +20,5 @@ int rit_stato(attivita a);
 data_ora rit_tempo_creazione(attivita a);
 
 void imposta_stato(attivita a, int stato);
+
+#endif
