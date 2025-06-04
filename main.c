@@ -11,18 +11,18 @@ void menu(lista l) {
     int scelta;
     do {
         printf("\n======== MENU ========\n");
-        printf("1. Visualizza attività\n");
+        printf("1. Report settimanale\n");
         printf("2. Mostra stato avanzamento\n");
         printf("3. Aggiorna stato\n");
         printf("0. Esci\n");
-        printf("======================\n");
+        printf("\n========================================\n");
         printf("Scelta: ");
         scanf("%d", &scelta);
         getchar(); // per consumare il newline
 
         switch (scelta) {
             case 1:
-                stampa_lista(l);
+                genera_report_settimanale(l);
                 break;
             case 2:
                 mostra_progresso(l);

@@ -13,7 +13,7 @@ void mostra_progresso(lista l) {
         data_ora scadenza = rit_scadenza(a);
         data_ora trascorso = calcolo_tempo_trascorso(creazione);
 
-        int ore_trascorse = trascorso.ore + (trascorso.minuti / 60.0);
+        int ore_trascorse = rit_ore(trascorso) + (rit_minuti(trascorso) / 60.0);
         int percentuale = (stimato > 0) ? (ore_trascorse * 100 / stimato) : 0;
 
         // Stampa intestazione attività
@@ -93,6 +93,63 @@ int aggiorna_stato(attivita a, int scelta) {
     printf("Stato aggiornato correttamente.\n");
     return 0;
 }
+
+void genera_report_settimanale(lista l) {
+    data_ora oggi = ottieni_data_ora();
+    int settimana_corrente = numero_settimana(oggi);
+    int anno_corrente = rit_anno(oggi);
+
+    printf("===== 📆 Report Settimanale Esteso =====\n");
+
+    lista corr = l;
+
+    // Stampa intestazioni e cicla per ogni categoria
+    const char* categorie[] = {
+        "📅 Settimana corrente:",
+        "📅 Settimana prossima:",
+        "📅 Settimane future:",
+        "🕒 Attività scadute:"
+    };
+
+    for (int categoria = 0; categoria < 4; categoria++) {
+        printf("\n%s\n", categorie[categoria]);
+        corr = l;  // Reset puntatore
+
+        int trovata = 0;
+        while (corr != NULL) {
+            attivita a = corr->valore;
+            data_ora scad = rit_scadenza(a);
+
+            int settimana_attivita = numero_settimana(scad);
+            int anno_attivita = rit_anno(scad);
+            int cmp = confronta_data_ora(scad, oggi);
+
+            int stampa = 0;
+            if (categoria == 0 && settimana_attivita == settimana_corrente && anno_attivita == anno_corrente && cmp >= 0)
+                stampa = 1;
+            else if (categoria == 1 && settimana_attivita == settimana_corrente + 1 && anno_attivita == anno_corrente)
+                stampa = 1;
+            else if (categoria == 2 && settimana_attivita > settimana_corrente + 1 && anno_attivita >= anno_corrente)
+                stampa = 1;
+            else if (categoria == 3 && cmp < 0)
+                stampa = 1;
+
+            if (stampa) {
+                stampa_attivita(a);
+                trovata = 1;
+            }
+
+            corr = corr->successivo;
+        }
+
+        if (!trovata) {
+            printf("Nessuna attività trovata.\n");
+        }
+    }
+
+    printf("\n========================================\n");
+}
+
 
 
 
