@@ -157,3 +157,9 @@ int rit_secondi(data_ora d) {
 	return d->secondi;
 }
 
+void libera_data_ora(data_ora d) {
+    if (d != NULL) {
+        free(d);
+    }
+}
+

@@ -20,7 +20,7 @@ struct attivita_studio {
 // Funzione che crea e restituisce una nuova attività.
 // I parametri includono descrizione, corso, data di scadenza, tempo stimato,
 // priorità e stato. Restituisce una struttura `attivita` inizializzata.
-attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int st,int ore){
+attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore){
     attivita nuova = (attivita)malloc(sizeof(struct attivita_studio));
     if (nuova == NULL) {
         printf("Errore di allocazione memoria\n");
@@ -36,10 +36,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
 
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
-    nuova->stato = st;
-
-	if(st==1)
-    	nuova->tempo_inizio = ottieni_data_ora();
+    nuova->stato = 0;
     return nuova;
 }
 
@@ -118,4 +115,13 @@ int confronta_descrizione(attivita a, const char *descrizione) {
 
 void imposta_stato(attivita a, int stato) {
     a->stato = stato;
+}
+
+void libera_attivita(attivita a) {
+    if (a == NULL) return;
+
+    if (a->scadenza != NULL) libera_data_ora(a->scadenza);
+    if (a->tempo_inizio != NULL) libera_data_ora(a->tempo_inizio);
+
+    free(a);
 }

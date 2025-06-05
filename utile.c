@@ -1,8 +1,111 @@
 #include <stdio.h>
+#include <string.h>
 #include "lista.h"
 #include "attivita.h"
 #include "data.h"
 
+#define MAX_LINE 512
+#define MAX 100
+
+attivita inserisci_attivita_da_input() {
+    char descrizione[MAX], corso[MAX];
+    int giorno, mese, anno, ore, tempo_stimato, priorita;
+
+    printf("Inserisci descrizione: ");
+    fgets(descrizione, sizeof(descrizione), stdin);
+    descrizione[strcspn(descrizione, "\n")] = 0;
+
+    printf("Inserisci nome corso: ");
+    fgets(corso, sizeof(corso), stdin);
+    corso[strcspn(corso, "\n")] = 0;
+
+    printf("Inserisci giorno di scadenza (1-31): ");
+    scanf("%d", &giorno);
+    printf("Inserisci mese di scadenza (1-12): ");
+    scanf("%d", &mese);
+    printf("Inserisci anno di scadenza (>0): ");
+    scanf("%d", &anno);
+
+    printf("Inserisci ora di scadenza (0-23): ");
+    scanf("%d", &ore);
+
+    printf("Inserisci tempo stimato (ore > 0): ");
+    scanf("%d", &tempo_stimato);
+
+    printf("Inserisci priorità (0=bassa, 1=media, 2=alta): ");
+    scanf("%d", &priorita);
+
+    // Stato iniziale: 0 = non iniziata
+    int stato = 0;
+
+    // Svuota il buffer di input
+    while (getchar() != '\n');
+
+    // Validazioni base
+    if (giorno < 1 || giorno > 31 || mese < 1 || mese > 12 || anno <= 0 ||
+        ore < 0 || ore > 23 || tempo_stimato <= 0 || priorita < 0 || priorita > 2) {
+        printf("Errore nei dati inseriti. Operazione annullata.\n");
+        return NULL;
+        }
+
+    attivita a=crea_attivita(descrizione, corso, giorno, mese, anno,
+                         tempo_stimato, priorita, ore);
+    return a;
+}
+
+lista carica_attivita_da_file(const char *nome_file) {
+    FILE *input = fopen(nome_file, "r");
+    if (input == NULL) {
+        printf("Impossibile aprire il file %s\n", nome_file);
+        return NULL;
+    }
+
+    char riga[MAX_LINE];
+    int riga_num = 0;
+    lista l = nuova_lista();
+
+    while (fgets(riga, MAX_LINE, input) != NULL) {
+        riga_num++;
+
+        char descrizione[MAX], corso[MAX];
+        int giorno, mese, anno, tempo_stimato, priorita, ore;
+
+        riga[strcspn(riga, "\n")] = 0;
+
+        if (sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d;",
+                   descrizione, corso,
+                   &giorno, &mese, &anno, &ore,
+                   &tempo_stimato, &priorita) != 8) {
+            fprintf(stderr, "Riga %d: formato riga non valido: %s\n", riga_num, riga);
+            continue;
+                   }
+
+        if (giorno < 1 || giorno > 31 ||
+            mese < 1 || mese > 12 ||
+            anno <= 0 ||
+            tempo_stimato <= 0 ||
+            priorita < 0 || priorita > 2 ||
+
+            ore < 0 || ore > 24) {
+            fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
+            fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
+            fprintf(stderr, "  Mese: %d (1-12)\n", mese);
+            fprintf(stderr, "  Ore: %d (0-24)\n", ore);
+            fprintf(stderr, "  Anno: %d (>0)\n", anno);
+            fprintf(stderr, "  Tempo stimato: %d (>0)\n", tempo_stimato);
+            fprintf(stderr, "  Priorità: %d (0=bassa, 1=media, 2=alta)\n", priorita);
+
+            continue;
+            }
+
+        attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
+                                       tempo_stimato, priorita, ore);
+        l = cons_lista(nuova, l);
+    }
+
+    fclose(input);
+    return l;
+}
 // Verifica se l'attività è in ritardo, se lo è cambia lo stato
 void controlla_ritardo(attivita a) {
 

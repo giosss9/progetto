@@ -90,3 +90,17 @@ attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
     return NULLITEM;
 }
 
+void libera_lista(lista l) {
+    while (l != NULL) {
+        lista temp = l;
+        l = l->successivo;
+
+        attivita a = temp->valore;
+
+        // Libera i campi dinamici dell'attività
+        libera_attivita(a);
+
+        // Libera il nodo della lista
+        free(temp);
+    }
+}

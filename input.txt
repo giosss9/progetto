@@ -1,10 +1,10 @@
-Studiare programmazione;Informatica;20;06;2025;10;12;1;1
-Fare esercizi;Matematica;22;06;2025;10;2;1;1
-Leggere capitolo 3;Letteratura;4;06;2025;15;3;0;0
-Ripassare derivate;Matematica;23;06;2025;9;4;2;1
-Preparare presentazione;Storia;24;06;2025;16;6;1;0
-Laboratorio Arduino;Tecnologia;25;06;2025;14;5;2;1
-Scrivere tema;Italiano;20;05;2025;17;3;1;1
-Verifica inglese;Inglese;26;05;2025;11;2;0;0
-Studio gruppo;Fisica;21;05;2025;13;2;1;0
-Progetto finale;Informatica;27;06;2025;10;10;2;1
+Studiare programmazione;Informatica;20;06;2025;10;12;1
+Fare esercizi;Matematica;22;06;2025;10;2;1
+Leggere capitolo 3;Letteratura;4;06;2025;15;3;0
+Ripassare derivate;Matematica;23;06;2025;9;4;2
+Preparare presentazione;Storia;24;06;2025;16;6;1
+Laboratorio Arduino;Tecnologia;25;06;2025;14;5;2
+Scrivere tema;Italiano;20;05;2025;17;3;1
+Verifica inglese;Inglese;26;05;2025;11;2;0
+Studio gruppo;Fisica;21;05;2025;13;2;1
+Progetto finale;Informatica;27;06;2025;10;10;2

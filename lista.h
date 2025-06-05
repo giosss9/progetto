@@ -38,4 +38,6 @@ attivita cerca_attivita_per_descrizione(lista l, const char *descrizione);
 
 void stampa_lista_per_stato(lista l, int stato_richiesto);
 
+void libera_lista(lista l);
+
 #endif
