@@ -14,7 +14,7 @@ struct attivita_studio {
     int tempo_stimato;
     int priorita;        //0=bassa 1=media 2=alta
     int stato;          //0=non iniziata 1=in corso 2=completata 3=in ritardo
-    data_ora tempo_creazione; //per tenere conto del tempo trascorso
+    data_ora tempo_inizio; //per tenere conto del tempo trascorso, viene  memoriizzato quando l'utente imposta che l'attivita è in corso
 };
 
 // Funzione che crea e restituisce una nuova attività.
@@ -38,7 +38,8 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     nuova->priorita = pr;
     nuova->stato = st;
 
-    nuova->tempo_creazione = ottieni_data_ora(); // funzione che restituisce una data_ora
+	if(st==1)
+    	nuova->tempo_inizio = ottieni_data_ora();
     return nuova;
 }
 
@@ -100,8 +101,8 @@ int rit_stato(attivita a) {
     return a->stato;
 }
 
-data_ora rit_tempo_creazione(attivita a) {
-    return a->tempo_creazione;
+data_ora rit_tempo_inizio(attivita a) {
+    return a->tempo_inizio;
 }
 
 // Confronta la descrizione dell'attività con quella fornita esattamente (case-sensitive).
