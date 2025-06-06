@@ -42,8 +42,12 @@ attivita inserisci_attivita_da_input() {
     while (getchar() != '\n');
 
     // Validazioni base
-    if (giorno < 1 || giorno > 31 || mese < 1 || mese > 12 || anno <= 0 ||
-        ore < 0 || ore > 23 || tempo_stimato <= 0 || priorita < 0 || priorita > 2) {
+     if (tempo_stimato < 0 ||
+			priorita < 0 || priorita > 2 ||
+			 ore < 0 || ore > 23 ||
+			 giorno<0 || giorno>31||
+			 mese<1 || mese>12 ||
+			 anno<2024 || anno>2030) {
         printf("Errore nei dati inseriti. Operazione annullata.\n");
         return NULL;
         }
@@ -80,7 +84,12 @@ lista carica_attivita_da_file(const char *nome_file) {
             continue;
                    }
 
-        if (tempo < 0 || pr < 0 || pr > 2 || ore < 0 || ore > 23 || g<0 || g>31 || m<0 || m>12 || a<2020 || a>2030) {
+        if (tempo_stimato < 0 ||
+			priorita < 0 || priorita > 2 ||
+			 ore < 0 || ore > 23 ||
+			 giorno<0 || giorno>31||
+			 mese<1 || mese>12 ||
+			 anno<2024 || anno>2030) {
 
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
             fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
@@ -128,14 +137,13 @@ void mostra_progresso(lista l) {
         lista corrente = l;
         int trovata = 0;
 
-        while (corrente != NULL) {
-            attivita a = corrente->valore;
+        while (!lista_vuota(corrente)) {
+            attivita a = prendi_primo(corrente);
             controlla_ritardo(a);
             int stato = rit_stato(a);
 
             if (stato == stato_atteso) {
                 trovata = 1;
-
                 int stimato = rit_tempo_stimato(a);
                 printf("\n--- Attività: %s ---\n", rit_descrizione(a));
                 printf("Tempo stimato: %d ore\n", stimato);
@@ -143,10 +151,18 @@ void mostra_progresso(lista l) {
                 if (stato == 1) { // Solo per "in corso"
                     data_ora inizio = rit_tempo_inizio(a);
                     data_ora trascorso = calcolo_tempo_trascorso(inizio);
-                    int ore_trascorse = rit_ore(trascorso) + (rit_minuti(trascorso) / 60.0);
+                    if (trascorso == NULL) {
+                        printf("Errore: tempo trascorso non calcolabile\n");
+                        continue;
+                    }
+                    int ore_trascorse = rit_ore(trascorso) ;
                     int percentuale = (stimato > 0) ? (ore_trascorse * 100 / stimato) : 0;
 
-                    printf("Tempo trascorso: %d ore\n", ore_trascorse);
+                    if (ore_trascorse < 1.0) {
+                        printf("Tempo trascorso: %d minuti\n", rit_minuti(trascorso) );
+                    } else {
+                        printf("Tempo trascorso: %d ore\n", rit_ore(trascorso));
+                    }
 
                     // Barra di progresso
                     printf("Progresso: [");
@@ -157,7 +173,7 @@ void mostra_progresso(lista l) {
                     }
                     printf("] %d%%\n", percentuale);
 
-                     if (ore_trascorse >= stimato) {
+                    if (ore_trascorse >= stimato) {
                         printf("⚠ Stato: POSSIBILE RITARDO (tempo stimato superato)\n");
                     } else {
                         printf("⏳ Stato: IN CORSO\n");
@@ -172,7 +188,7 @@ void mostra_progresso(lista l) {
                 }
             }
 
-            corrente = corrente->successivo;
+            corrente = coda_lista(corrente);
         }
 
         if (!trovata) {
@@ -204,6 +220,10 @@ int aggiorna_stato(attivita a, int scelta) {
         printf("L'attività è già in ritardo! Affrettati a completarla.\n");
         return 2;
     }
+
+    if(scelta==1){
+        imposta_tempo_inizio(a);
+    }
     // Aggiorna lo stato
     imposta_stato(a, scelta);
     printf("Stato aggiornato correttamente.\n");
@@ -217,9 +237,6 @@ void genera_report_settimanale(lista l) {
 
     printf("===== 📆 Report Settimanale =====\n");
 
-    lista corr = l;
-
-    // Stampa intestazioni e cicla per ogni categoria
     const char* categorie[] = {
         "📅 Settimana corrente:",
         "📅 Settimana prossima:",
@@ -229,11 +246,12 @@ void genera_report_settimanale(lista l) {
 
     for (int categoria = 0; categoria < 4; categoria++) {
         printf("\n%s\n", categorie[categoria]);
-        corr = l;  // Reset puntatore
 
+        lista corr = l;
         int trovata = 0;
-        while (corr != NULL) {
-            attivita a = corr->valore;
+
+        while (!lista_vuota(corr)) {
+            attivita a = prendi_primo(corr);
             data_ora scad = rit_scadenza(a);
 
             int settimana_attivita = numero_settimana(scad);
@@ -255,7 +273,7 @@ void genera_report_settimanale(lista l) {
                 trovata = 1;
             }
 
-            corr = corr->successivo;
+            corr = coda_lista(corr);  // ✅ uso incapsulato
         }
 
         if (!trovata) {

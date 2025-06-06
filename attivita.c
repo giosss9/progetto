@@ -25,7 +25,12 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     	printf("Errore: descrizione o corso null\n");
     	return NULL;
 	}
-	if (tempo < 0 || pr < 0 || pr > 2 || ore < 0 || ore > 23 || g<0 || g>31 || m<0 || m>12 || a<2020 || a>2030) {
+	if (tempo < 0 ||
+        pr < 0 || pr > 2 ||
+        ore < 0 || ore > 23 ||
+        g<1 || g>31 ||
+        m<1 || m>12 ||
+        a<2024 || a>2031) {
     	printf("Errore: valori non validi\n");
     	return NULL;
 	}
@@ -158,6 +163,19 @@ void imposta_stato(attivita a, int stato) {
     a->stato = stato;
 }
 
+void imposta_tempo_inizio(attivita a) {
+    if (a == NULL) return;
+
+    // Se c'era già un tempo_inizio, libera la memoria per evitare perdite
+    if (a->tempo_inizio != NULL) {
+        free(a->tempo_inizio);
+        a->tempo_inizio = NULL;
+    }
+
+    // Ottieni data_ora corrente e assegnala
+    a->tempo_inizio = ottieni_data_ora();
+}
+
 void libera_attivita(attivita a) {
     if (a == NULL) return;
 
@@ -169,3 +187,4 @@ void libera_attivita(attivita a) {
 
     free(a);
 }
+

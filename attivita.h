@@ -20,6 +20,7 @@ int rit_stato(attivita a);
 data_ora rit_tempo_inizio(attivita a);
 
 void imposta_stato(attivita a, int stato);
+void imposta_tempo_inizio(attivita a);
 
 void libera_attivita(attivita a);
 

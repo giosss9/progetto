@@ -53,48 +53,61 @@ data_ora ottieni_data_ora() {
 
 // Calcola il tempo trascorso tra la data passata e quella attuale (giorni minuti e ore)
 data_ora calcolo_tempo_trascorso(data_ora inizio) {
-    if (inizio == NULL) return NULL;
+    if (inizio == NULL) {
+        fprintf(stderr, "Errore: data di inizio NULL\n");
+        return NULL;
+    }
 
-    struct tm t_inizio = {
-        .tm_year = inizio->anno - 1900,
-        .tm_mon  = inizio->mese - 1,
-        .tm_mday = inizio->giorno,
-        .tm_hour = inizio->ore,
-        .tm_min  = inizio->minuti,
-        .tm_sec  = inizio->secondi
-    };
+    // Costruisci struct tm per l'inizio
+    struct tm t_inizio = {0};
+    t_inizio.tm_year = inizio->anno - 1900;
+    t_inizio.tm_mon  = inizio->mese - 1;
+    t_inizio.tm_mday = inizio->giorno;
+    t_inizio.tm_hour = inizio->ore;
+    t_inizio.tm_min  = inizio->minuti;
+    t_inizio.tm_sec  = inizio->secondi;
 
     time_t tempo_inizio = mktime(&t_inizio);
     if (tempo_inizio == -1) {
-        fprintf(stderr, "Errore conversione mktime (inizio)\n");
+        fprintf(stderr, "Errore: mktime fallito per data inizio\n");
         return NULL;
     }
 
     data_ora adesso = ottieni_data_ora();
-    if (adesso == NULL) return NULL;
-
-    struct tm t_attuale = {
-        .tm_year = adesso->anno - 1900,
-        .tm_mon  = adesso->mese - 1,
-        .tm_mday = adesso->giorno,
-        .tm_hour = adesso->ore,
-        .tm_min  = adesso->minuti,
-        .tm_sec  = adesso->secondi
-    };
-
-    time_t tempo_adesso = mktime(&t_attuale);
-    if (tempo_adesso == -1) {
-        fprintf(stderr, "Errore conversione mktime (attuale)\n");
-        free(adesso);
+    if (adesso == NULL) {
+        fprintf(stderr, "Errore: impossibile ottenere la data attuale\n");
         return NULL;
     }
 
-    double diff_sec = difftime(tempo_adesso, tempo_inizio);
-    free(adesso);
+    // Costruisci struct tm per ora attuale
+    struct tm t_adesso = {0};
+    t_adesso.tm_year = adesso->anno - 1900;
+    t_adesso.tm_mon  = adesso->mese - 1;
+    t_adesso.tm_mday = adesso->giorno;
+    t_adesso.tm_hour = adesso->ore;
+    t_adesso.tm_min  = adesso->minuti;
+    t_adesso.tm_sec  = adesso->secondi;
 
+    time_t tempo_attuale = mktime(&t_adesso);
+    free(adesso); // non serve più
+
+    if (tempo_attuale == -1) {
+        fprintf(stderr, "Errore: mktime fallito per data attuale\n");
+        return NULL;
+    }
+
+    double diff_sec = difftime(tempo_attuale, tempo_inizio);
+
+    // Se la differenza è negativa (inizio nel futuro), forza a 0
+    if (diff_sec < 0) {
+        fprintf(stderr, "Attenzione: data di inizio è nel futuro\n");
+        diff_sec = 0;
+    }
+
+    // Alloca e riempi la struct risultato
     data_ora risultato = malloc(sizeof(struct data_ora));
-    if (risultato == NULL) {
-        fprintf(stderr, "Errore allocazione memoria per il risultato\n");
+    if (!risultato) {
+        fprintf(stderr, "Errore allocazione memoria risultato\n");
         return NULL;
     }
 
@@ -107,6 +120,7 @@ data_ora calcolo_tempo_trascorso(data_ora inizio) {
     risultato->minuti = (int)(diff_sec / 60);
     risultato->secondi = (int)(diff_sec - risultato->minuti * 60);
 
+    // Campi non rilevanti per il tempo trascorso
     risultato->anno = 0;
     risultato->mese = 0;
 
