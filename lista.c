@@ -4,6 +4,11 @@
 #include "attivita.h"
 #include "lista.h"
 
+struct nodo {
+    attivita valore;
+    struct nodo *successivo;
+};
+
 lista nuova_lista(void) {
     return NULL;
 }

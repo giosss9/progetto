@@ -3,10 +3,6 @@
 
 #include "attivita.h"
 
-struct nodo {
-    attivita valore;
-    struct nodo *successivo;
-};
 // Definizione del tipo lista (puntatore a nodo)
 typedef struct nodo* lista;
 
