@@ -80,13 +80,8 @@ lista carica_attivita_da_file(const char *nome_file) {
             continue;
                    }
 
-        if (giorno < 1 || giorno > 31 ||
-            mese < 1 || mese > 12 ||
-            anno <= 0 ||
-            tempo_stimato <= 0 ||
-            priorita < 0 || priorita > 2 ||
+        if (tempo < 0 || pr < 0 || pr > 2 || ore < 0 || ore > 23 || g<0 || g>31 || m<0 || m>12 || a<2020 || a>2030) {
 
-            ore < 0 || ore > 24) {
             fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
             fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
             fprintf(stderr, "  Mese: %d (1-12)\n", mese);
@@ -96,7 +91,7 @@ lista carica_attivita_da_file(const char *nome_file) {
             fprintf(stderr, "  Priorità: %d (0=bassa, 1=media, 2=alta)\n", priorita);
 
             continue;
-            }
+        }
 
         attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
                                        tempo_stimato, priorita, ore);

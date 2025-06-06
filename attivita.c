@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <strings.h> // per strcasestr
+#include <strings.h>
 #include "attivita.h"
 #include "data.h"
 
@@ -21,6 +21,15 @@ struct attivita_studio {
 // I parametri includono descrizione, corso, data di scadenza, tempo stimato,
 // priorità e stato. Restituisce una struttura `attivita` inizializzata.
 attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore){
+	if (d == NULL || c == NULL) {
+    	printf("Errore: descrizione o corso null\n");
+    	return NULL;
+	}
+	if (tempo < 0 || pr < 0 || pr > 2 || ore < 0 || ore > 23 || g<0 || g>31 || m<0 || m>12 || a<2020 || a>2030) {
+    	printf("Errore: valori non validi\n");
+    	return NULL;
+	}
+
     attivita nuova = (attivita)malloc(sizeof(struct attivita_studio));
     if (nuova == NULL) {
         printf("Errore di allocazione memoria\n");
@@ -33,6 +42,11 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     nuova->corso[MAX - 1] = '\0';
 
 	nuova->scadenza = crea_data_ora(g, m, a, ore, 0, 0);
+	if (nuova->scadenza == NULL) {
+    	printf("Errore nella creazione della data\n");
+    	free(nuova);
+    	return NULL;
+	}
 
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
@@ -75,53 +89,83 @@ void stampa_attivita(attivita a) {
 
 //Funzioni che ritornano le variabili di attivita
 char* rit_descrizione(attivita a) {
-    return a->descrizione;
+    char *descr = NULL;
+    if (a != NULL)
+        descr = a->descrizione;
+    return descr;
 }
 
 char* rit_corso(attivita a) {
-    return a->corso;
+    char *corso = NULL;
+    if (a != NULL)
+        corso = a->corso;
+    return corso;
 }
 
 data_ora rit_scadenza(attivita a) {
-    return a->scadenza;
+    data_ora d = NULL;
+    if (a != NULL)
+        d = a->scadenza;
+    return d;
 }
 
 int rit_tempo_stimato(attivita a) {
-    return a->tempo_stimato;
+    int tempo = -1;
+    if (a != NULL)
+        tempo = a->tempo_stimato;
+    return tempo;
 }
 
 int rit_priorita(attivita a) {
-    return a->priorita;
+    int priorita = -1;
+    if (a != NULL)
+        priorita = a->priorita;
+    return priorita;
 }
 
 int rit_stato(attivita a) {
-    return a->stato;
+    int stato = -1;
+    if (a != NULL)
+        stato = a->stato;
+    return stato;
 }
 
+
 data_ora rit_tempo_inizio(attivita a) {
-    return a->tempo_inizio;
+    data_ora t = NULL;
+    if (a != NULL)
+        t = a->tempo_inizio;
+    return t;
 }
 
 // Confronta la descrizione dell'attività con quella fornita esattamente (case-sensitive).
 // Restituisce 1 se le stringhe coincidono perfettamente, altrimenti 0.
 // Gestisce anche eventuali puntatori NULL per evitare errori di segmentazione.
 int confronta_descrizione(attivita a, const char *descrizione) {
-    if (a == NULL || a->descrizione == NULL || descrizione == NULL) {
-        return 0;
-    }
-    return strcmp(a->descrizione, descrizione) == 0;
+    int risultato = 0;
+    if (a != NULL && descrizione != NULL)
+        risultato = strcmp(a->descrizione, descrizione) == 0;
+    return risultato;
 }
 
 
 void imposta_stato(attivita a, int stato) {
+	if (a == NULL) return;
+    if (stato < 0 || stato > 3) {
+        printf("Stato non valido\n");
+        return;
+    }
     a->stato = stato;
 }
 
 void libera_attivita(attivita a) {
     if (a == NULL) return;
 
-    if (a->scadenza != NULL) libera_data_ora(a->scadenza);
-    if (a->tempo_inizio != NULL) libera_data_ora(a->tempo_inizio);
+    if (a->scadenza != NULL)
+		libera_data_ora(a->scadenza);
+
+    if (a->tempo_inizio != NULL)
+		libera_data_ora(a->tempo_inizio);
 
     free(a);
 }
