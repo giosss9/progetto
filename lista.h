@@ -32,6 +32,8 @@ void stampa_lista(lista l);
 //Funzione che data una lista cerca un'attivita per la sua descrizione
 attivita cerca_attivita_per_descrizione(lista l, const char *descrizione);
 
+attivita cerca_attivita_per_id(lista l, const int id);
+
 void stampa_lista_per_stato(lista l, int stato_richiesto);
 
 void libera_lista(lista l);

@@ -47,11 +47,18 @@ attivita prendi_primo(lista l) {
 
 int dimensione_lista(lista l) {
     int conta = 0;
-    while (l != NULL) {
+    while (!lista_vuota(l)) {
         conta++;
         l = l->successivo;
     }
     return conta;
+}
+
+void stampa_lista(lista l){
+	while (!lista_vuota(l)){
+		stampa_attivita(l->valore);
+		l=l->successivo;
+	}
 }
 
 void stampa_lista_per_stato(lista l, int stato_richiesto) {
@@ -61,7 +68,7 @@ void stampa_lista_per_stato(lista l, int stato_richiesto) {
     }
 
     int trovata = 0;
-    while (l != NULL) {
+    while (!lista_vuota(l)) {
         if (rit_stato(l->valore) == stato_richiesto) {
             stampa_attivita(l->valore);
             trovata = 1;
@@ -83,7 +90,7 @@ attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
     }
 
     int verifica;
-    while (l != NULL) {
+    while (!lista_vuota(l)) {
         if (l->valore != NULL) {
             verifica = confronta_descrizione(l->valore, descrizione);
             if (verifica == 1)
@@ -95,8 +102,25 @@ attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
     return NULLITEM;
 }
 
+attivita cerca_attivita_per_id(lista l, const int id) {
+    if (lista_vuota(l)) {
+        printf("La lista è vuota.\n");
+        return NULLITEM;
+    }
+
+    while (!lista_vuota(l)) {
+        if (l->valore != NULL) {
+            if(id==rit_id(l->valore))
+                return l->valore;
+        }
+        l = l->successivo;
+    }
+
+    return NULLITEM;
+}
+
 void libera_lista(lista l) {
-    while (l != NULL) {
+    while (!lista_vuota(l)) {
         lista temp = l;
         l = l->successivo;
 

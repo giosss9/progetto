@@ -7,10 +7,11 @@
 #define MAX_LINE 512
 #define MAX 100
 
-attivita inserisci_attivita_da_input() {
+attivita inserisci_attivita_da_input(int *ultimo_id) {
     char descrizione[MAX], corso[MAX];
     int giorno, mese, anno, ore, tempo_stimato, priorita;
-
+	int id=*ultimo_id;
+	id++;
     printf("Inserisci descrizione: ");
     fgets(descrizione, sizeof(descrizione), stdin);
     descrizione[strcspn(descrizione, "\n")] = 0;
@@ -53,11 +54,12 @@ attivita inserisci_attivita_da_input() {
         }
 
     attivita a=crea_attivita(descrizione, corso, giorno, mese, anno,
-                         tempo_stimato, priorita, ore);
+                         tempo_stimato, priorita, ore, id);
+	*ultimo_id=id;
     return a;
 }
 
-lista carica_attivita_da_file(const char *nome_file) {
+lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
     FILE *input = fopen(nome_file, "r");
     if (input == NULL) {
         printf("Impossibile aprire il file %s\n", nome_file);
@@ -67,7 +69,7 @@ lista carica_attivita_da_file(const char *nome_file) {
     char riga[MAX_LINE];
     int riga_num = 0;
     lista l = nuova_lista();
-
+	int id=0;
     while (fgets(riga, MAX_LINE, input) != NULL) {
         riga_num++;
 
@@ -102,12 +104,17 @@ lista carica_attivita_da_file(const char *nome_file) {
             continue;
         }
 
+
         attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
-                                       tempo_stimato, priorita, ore);
+                                       tempo_stimato, priorita, ore, id);
+
         l = cons_lista(nuova, l);
+		id++;
     }
 
     fclose(input);
+	id--; //perchè fa un'addizione in più all'interno del while
+	*ultimo_id=id;
     return l;
 }
 // Verifica se l'attività è in ritardo, se lo è cambia lo stato
@@ -235,13 +242,13 @@ void genera_report_settimanale(lista l) {
     int settimana_corrente = numero_settimana(oggi);
     int anno_corrente = rit_anno(oggi);
 
-    printf("===== 📆 Report Settimanale =====\n");
+    printf("=========📆 Report Settimanale==========\n");
 
     const char* categorie[] = {
-        "📅 Settimana corrente:",
-        "📅 Settimana prossima:",
-        "📅 Settimane future:",
-        "🕒 Attività scadute:"
+        "Settimana corrente:",
+        "Settimana prossima:",
+        "Settimane future:",
+        "Attività scadute:"
     };
 
     for (int categoria = 0; categoria < 4; categoria++) {
@@ -282,6 +289,65 @@ void genera_report_settimanale(lista l) {
     }
 
     printf("\n========================================\n");
+}
+
+
+void menu(lista l, int *ultimo_id) {
+    int scelta;
+    do {
+        printf("\n=================MENU===================\n");
+        printf("1. Report settimanale\n");
+        printf("2. Mostra stato avanzamento\n");
+        printf("3. Aggiorna stato\n");
+        printf("4. Inserisci nuova attivita\n");
+        printf("0. Esci\n");
+        printf("========================================\n");
+        printf("Scelta: ");
+        scanf("%d", &scelta);
+        getchar(); // per consumare il newline
+
+        switch (scelta) {
+            case 1:
+                genera_report_settimanale(l);
+                break;
+            case 2:
+                mostra_progresso(l);
+                break;
+            case 3:
+				stampa_lista(l);
+				int id;
+				int nuovo,v=1, k=1;
+				attivita a;
+				while(v==1){
+					while(k==1){
+						printf("Inserisci l'id dell'attività che vuoi cambiare: \n");
+						scanf("%d", &id);
+						a=cerca_attivita_per_id(l,id);
+						if(a==NULLITEM)
+							printf("Attività non trovata.\n");
+						else
+							k=0;
+					}
+					printf("Inserisci il nuovo stato dell'attivita [1=in corso, 2=completata]: \n");
+					scanf("%d",&nuovo);
+					v=aggiorna_stato(a,nuovo);
+				}
+
+				break;
+            case 4:
+                attivita nuova = inserisci_attivita_da_input(ultimo_id);
+                if (nuova != NULL) {
+                    l = cons_lista(nuova, l);
+                }
+				break;
+			case 0:
+                libera_lista(l);
+                printf("Uscita in corso...\n");
+                break;
+            default:
+                printf("Scelta non valida.\n");
+        }
+    } while (scelta != 0);
 }
 
 

@@ -8,6 +8,7 @@
 #define MAX 100
 
 struct attivita_studio {
+	int id;
     char descrizione[MAX];
     char corso[MAX];
     data_ora scadenza;
@@ -20,7 +21,7 @@ struct attivita_studio {
 // Funzione che crea e restituisce una nuova attività.
 // I parametri includono descrizione, corso, data di scadenza, tempo stimato,
 // priorità e stato. Restituisce una struttura `attivita` inizializzata.
-attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore){
+attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore, int id){
 	if (d == NULL || c == NULL) {
     	printf("Errore: descrizione o corso null\n");
     	return NULL;
@@ -56,6 +57,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
     nuova->stato = 0;
+	nuova->id=id;
     return nuova;
 }
 
@@ -66,6 +68,7 @@ void stampa_attivita(attivita a) {
         return;
     }
 
+	printf("ID: %d\n", a->id);
     printf("Corso: %s\n", a->corso);
     printf("Descrizione: %s\n", a->descrizione);
     printf("Scadenza: %02d/%02d/%04d\n", rit_giorno(a->scadenza), rit_mese(a->scadenza), rit_anno(a->scadenza));
@@ -88,8 +91,9 @@ void stampa_attivita(attivita a) {
         case 2: printf("completata\n"); break;
         default: printf("sconosciuto\n"); break;
     }
-    printf("-----------------------------------\n");
+    printf("----------------------------------------\n");
 }
+
 
 
 //Funzioni che ritornano le variabili di attivita
@@ -135,6 +139,12 @@ int rit_stato(attivita a) {
     return stato;
 }
 
+int rit_id(attivita a) {
+    int id = -1;
+    if (a != NULL)
+        id = a->id;
+    return id;
+}
 
 data_ora rit_tempo_inizio(attivita a) {
     data_ora t = NULL;
