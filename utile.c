@@ -43,7 +43,7 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
     if (mese < 1 || mese > 12) {
         return 0;
     }
-    if (anno < 2025 || anno > 2030) {
+    if (anno < 2024 || anno > 2030) {
         return 0;
     }
     if (ore < 0 || ore > 23) {
@@ -193,25 +193,6 @@ void controlla_ritardo(attivita a) {
         imposta_stato(a,3);
     }
 }
-
-void controllo_completata(lista *l_ptr) {
-    lista curr = *l_ptr;
-
-    while (!lista_vuota(curr)) {
-        attivita a = prendi_primo(curr);
-        if (a != NULLATTIVITA && rit_stato(a) == 2) {
-            int id = rit_id(a);
-            *l_ptr = rimuovi_attivita_per_id(*l_ptr, id); // Modifica la testa se serve
-
-            // Dopo rimozione, resetto curr a nuova testa
-            curr = *l_ptr;
-        } else {
-            curr = coda_lista(curr);
-        }
-    }
-}
-
-
 
 void mostra_progresso(lista l) {
     const char* intestazioni[] = {
@@ -382,42 +363,6 @@ void genera_report_settimanale(lista l) {
     printf("\n========================================\n");
 }
 
-void aggiorna_stato_attivita(lista *l) {
-    stampa_lista(*l);
-    int id, nuovo, rit;
-    attivita a;
-    int v = 1;
-
-    while (v == 1) {
-        int k = 1;
-        while (k == 1) {
-            printf("Inserisci l'id dell'attività che vuoi cambiare: \n");
-            scanf("%d", &id);
-            a = cerca_attivita_per_id(*l, id);
-            if (a == NULLATTIVITA) {
-                printf("Attività non trovata.\n");
-            } else {
-                k = 0; // attività trovata
-            }
-        }
-
-        printf("Inserisci il nuovo stato dell'attività [1 = In Corso, 2 = Completata]: \n");
-        scanf("%d", &nuovo);
-
-        rit = aggiorna_stato(a, nuovo);
-
-        if (rit == 0) {
-            v = 0; // tutto ok, esce dal ciclo
-        } else if (rit == 1) {
-            printf("Riprova con un valore valido (1 o 2).\n");
-        } else if (rit == 2) {
-            printf("Non è possibile aggiornare questa attività.\n");
-            v = 0;
-        }
-    }
-    controllo_completata(l);
-}
-
 
 void menu(lista l, int *ultimo_id) {
     int scelta;
@@ -473,7 +418,7 @@ void menu(lista l, int *ultimo_id) {
         				v = 0;
     				}
 				}
-				controllo_completata(&l);
+
 				break;
             case 4:
                 attivita nuova = inserisci_attivita_da_input(ultimo_id);

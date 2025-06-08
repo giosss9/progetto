@@ -36,8 +36,6 @@ attivita cerca_attivita_per_id(lista l, const int id);
 
 void stampa_lista_per_stato(lista l, int stato_richiesto);
 
-lista rimuovi_attivita_per_id(lista l, int id);
-
 void libera_lista(lista l);
 
 #endif
