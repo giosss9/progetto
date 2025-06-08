@@ -63,8 +63,9 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
 
 attivita inserisci_attivita_da_input(int *ultimo_id) {
     char descrizione[MAX], corso[MAX];
+    char buffer[100];
     int giorno, mese, anno, ore, tempo_stimato, priorita;
-	int id=*ultimo_id;
+    int id = *ultimo_id;
 
     printf("Inserisci descrizione: ");
     fgets(descrizione, sizeof(descrizione), stdin);
@@ -75,36 +76,50 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
     corso[strcspn(corso, "\n")] = 0;
 
     printf("Inserisci giorno di scadenza (1-31): ");
-    scanf("%d", &giorno);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &giorno) != 1) {
+        printf("Input non valido per il giorno.\n");
+        return NULL;
+    }
+
     printf("Inserisci mese di scadenza (1-12): ");
-    scanf("%d", &mese);
-    printf("Inserisci anno di scadenza (>0): ");
-    scanf("%d", &anno);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &mese) != 1) {
+        printf("Input non valido per il mese.\n");
+        return NULL;
+    }
+
+    printf("Inserisci anno di scadenza (2024-2030): ");
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &anno) != 1) {
+        printf("Input non valido per l'anno.\n");
+        return NULL;
+    }
 
     printf("Inserisci ora di scadenza (0-23): ");
-    scanf("%d", &ore);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &ore) != 1) {
+        printf("Input non valido per l'ora.\n");
+        return NULL;
+    }
 
-    printf("Inserisci tempo stimato (ore > 0): ");
-    scanf("%d", &tempo_stimato);
+    printf("Inserisci tempo stimato in ore (>0): ");
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &tempo_stimato) != 1) {
+        printf("Input non valido per il tempo stimato.\n");
+        return NULL;
+    }
 
     printf("Inserisci priorità (0=bassa, 1=media, 2=alta): ");
-    scanf("%d", &priorita);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &priorita) != 1) {
+        printf("Input non valido per la priorità.\n");
+        return NULL;
+    }
 
-    // Stato iniziale: 0 = non iniziata
-    int stato = 0;
-
-    // Svuota il buffer di input
-    while (getchar() != '\n');
-
-    // Validazioni base
-     if (dati_validi) {
+    if (!dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)) {
         printf("Errore nei dati inseriti. Operazione annullata.\n");
         return NULL;
-     }
+    }
 
-    attivita a=crea_attivita(descrizione, corso, giorno, mese, anno,
-                         tempo_stimato, priorita, ore, id);
-	*ultimo_id=id+1;
+    attivita a = crea_attivita(descrizione, corso, giorno, mese, anno,
+                                tempo_stimato, priorita, ore, id);
+
+    *ultimo_id = id + 1;
     return a;
 }
 
@@ -135,23 +150,11 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
             continue;
                    }
 
-        if (tempo_stimato < 0 ||
-			priorita < 0 || priorita > 2 ||
-			 ore < 0 || ore > 23 ||
-			 giorno<0 || giorno>31||
-			 mese<1 || mese>12 ||
-			 anno<2024 || anno>2030) {
+       	if (!dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)){
+        	printf("Errore nei dati inseriti. Operazione annullata.\n");
+        	return NULL;
+     	}
 
-            fprintf(stderr, "Riga %d: dati non validi:\n", riga_num);
-            fprintf(stderr, "  Giorno: %d (1-31)\n", giorno);
-            fprintf(stderr, "  Mese: %d (1-12)\n", mese);
-            fprintf(stderr, "  Ore: %d (0-24)\n", ore);
-            fprintf(stderr, "  Anno: %d (>0)\n", anno);
-            fprintf(stderr, "  Tempo stimato: %d (>0)\n", tempo_stimato);
-            fprintf(stderr, "  Priorità: %d (0=bassa, 1=media, 2=alta)\n", priorita);
-
-            continue;
-        }
 
 
         attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
@@ -162,7 +165,7 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
     }
 
     fclose(input);
-	id--; //perchè fa un'addizione in più all'interno del while
+
 	*ultimo_id=id;
     return l;
 }
@@ -181,10 +184,10 @@ void controlla_ritardo(attivita a) {
 
 void mostra_progresso(lista l) {
     const char* intestazioni[] = {
-        "\n🔹 Attività NON INIZIATE:",
-        "\n🟡 Attività IN CORSO:",
-        "\n✅ Attività COMPLETATE:",
-        "\n⏰ Attività IN RITARDO:"
+        "\n Attività NON INIZIATE:",
+        "\n Attività IN CORSO:",
+        "\n Attività COMPLETATE:",
+        "\n Attività IN RITARDO:"
     };
 
     for (int stato_atteso = 0; stato_atteso <= 3; stato_atteso++) {
@@ -211,14 +214,19 @@ void mostra_progresso(lista l) {
                         printf("Errore: tempo trascorso non calcolabile\n");
                         continue;
                     }
-                    int ore_trascorse = rit_ore(trascorso) ;
-                    int percentuale = (stimato > 0) ? (ore_trascorse * 100 / stimato) : 0;
 
-                    if (ore_trascorse < 1.0) {
-                        printf("Tempo trascorso: %d minuti\n", rit_minuti(trascorso) );
-                    } else {
-                        printf("Tempo trascorso: %d ore\n", rit_ore(trascorso));
-                    }
+					int ore_trascorse=rit_ore(trascorso);
+					//Calcolo percentuale
+                    int minuti_trascorsi = ore_trascorse * 60 + rit_minuti(trascorso);
+					int minuti_stimati = stimato * 60;
+					int percentuale = (minuti_stimati > 0) ? (minuti_trascorsi * 100 / minuti_stimati) : 0;
+
+					if (minuti_trascorsi < 60) {
+    					printf("Tempo trascorso: %d minuti\n", minuti_trascorsi);
+					} else {
+    					printf("Tempo trascorso: %.1f ore\n", minuti_trascorsi / 60.0);
+					}
+
 
                     // Barra di progresso
                     printf("Progresso: [");
@@ -227,12 +235,15 @@ void mostra_progresso(lista l) {
                     for (int i = 0; i < barLength; ++i) {
                         printf(i < filled ? "#" : "-");
                     }
+					if (percentuale > 100) {
+    					percentuale = 100;
+					}
                     printf("] %d%%\n", percentuale);
 
                     if (ore_trascorse >= stimato) {
-                        printf("⚠ Stato: POSSIBILE RITARDO (tempo stimato superato)\n");
+                        printf("Stato: POSSIBILE RITARDO (tempo stimato superato)\n");
                     } else {
-                        printf("⏳ Stato: IN CORSO\n");
+                        printf("Stato: IN CORSO\n");
                     }
                 } else {
                     // Stato testuale per altri stati
@@ -263,7 +274,7 @@ int aggiorna_stato(attivita a, int scelta) {
     // Verifica se l'attività è già completata
     if (rit_stato(a) == 2) {
         printf("Attenzione! Questa attività è già completata.\n");
-        return 1;
+        return 2;
     }
 
     // Controllo validità input
@@ -364,28 +375,42 @@ void menu(lista l, int *ultimo_id) {
                 break;
             case 3:
 				stampa_lista(l);
-				int id;
-				int nuovo,v=1, k=1;
+				int id, nuovo, rit;
 				attivita a;
-				while(v==1){
-					while(k==1){
-						printf("Inserisci l'id dell'attività che vuoi cambiare: \n");
-						scanf("%d", &id);
-						a=cerca_attivita_per_id(l,id);
-						if(a==NULLITEM)
-							printf("Attività non trovata.\n");
-						else
-							k=0;
-					}
-					printf("Inserisci il nuovo stato dell'attivita [1=in corso, 2=completata]: \n");
-					scanf("%d",&nuovo);
-					v=aggiorna_stato(a,nuovo);
+				int v = 1;
+
+				while (v == 1) {
+    				int k = 1;
+    				while (k == 1) {
+        				printf("Inserisci l'id dell'attività che vuoi cambiare: \n");
+        				scanf("%d", &id);
+        				a = cerca_attivita_per_id(l, id);
+        				if (a == NULLATTIVITA) {
+            				printf("Attività non trovata.\n");
+        				} else {
+            				k = 0; // attività trovata
+        				}
+    				}
+
+    				printf("Inserisci il nuovo stato dell'attività [1 = In Corso, 2 = Completata]: \n");
+    				scanf("%d", &nuovo);
+
+				    rit = aggiorna_stato(a, nuovo);
+
+ 			 	  if (rit == 0) {
+        				v = 0; // tutto ok, esce dal ciclo
+    				} else if (rit == 1) {
+        				printf("Riprova con un valore valido (1 o 2).\n");
+    				} else if (rit == 2) {
+        				printf("Non è possibile aggiornare questa attività.\n");
+        				v = 0;
+    				}
 				}
 
 				break;
             case 4:
                 attivita nuova = inserisci_attivita_da_input(ultimo_id);
-                if (nuova != NULL) {
+                if (nuova != NULLATTIVITA) {
                     l = cons_lista(nuova, l);
                 }
 				break;

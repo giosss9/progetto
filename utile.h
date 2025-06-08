@@ -13,4 +13,6 @@ void genera_report_settimanale(lista l);
 
 void menu(lista l, int *ultimo_id);
 
+int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int priorita);
+
 #endif
