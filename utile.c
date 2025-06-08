@@ -55,7 +55,23 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
     if (priorita < 0 || priorita > 2) {
         return 0;
     }
+	// Aggiungi alla fine della funzione dati_validi
+	data_ora attivita_data = crea_data_ora(giorno, mese, anno, ore, 0, 0);
+	data_ora ora_corrente = ottieni_data_ora();
 
+	if (attivita_data == NULL || ora_corrente == NULL) {
+    	return 0; // errore nella creazione delle date
+	}
+
+	// Confronta la data: se è nel passato, non è valida
+	if (confronta_data_ora(attivita_data, ora_corrente) < 0) {
+    	libera_data_ora(attivita_data);
+    	libera_data_ora(ora_corrente);
+    	return 0;
+	}
+
+	libera_data_ora(attivita_data);
+	libera_data_ora(ora_corrente);
     // Se tutte le condizioni sono valide
     return 1;
 }
@@ -78,42 +94,42 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
     printf("Inserisci giorno di scadenza (1-31): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &giorno) != 1) {
         printf("Input non valido per il giorno.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     printf("Inserisci mese di scadenza (1-12): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &mese) != 1) {
         printf("Input non valido per il mese.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     printf("Inserisci anno di scadenza (2024-2030): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &anno) != 1) {
         printf("Input non valido per l'anno.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     printf("Inserisci ora di scadenza (0-23): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &ore) != 1) {
         printf("Input non valido per l'ora.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     printf("Inserisci tempo stimato in ore (>0): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &tempo_stimato) != 1) {
         printf("Input non valido per il tempo stimato.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     printf("Inserisci priorità (0=bassa, 1=media, 2=alta): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &priorita) != 1) {
         printf("Input non valido per la priorità.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     if (!dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)) {
         printf("Errore nei dati inseriti. Operazione annullata.\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     attivita a = crea_attivita(descrizione, corso, giorno, mese, anno,
@@ -150,18 +166,14 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
             continue;
                    }
 
-       	if (!dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)){
-        	printf("Errore nei dati inseriti. Operazione annullata.\n");
-        	return NULL;
-     	}
-
-
-
-        attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
+       	if (dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)){
+			 attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
                                        tempo_stimato, priorita, ore, id);
+        	l = cons_lista(nuova, l);
+			id++;
+     	}else
+			printf("Errore nei dati inseriti nella riga %d. Attivita non inserita.\n",riga_num);
 
-        l = cons_lista(nuova, l);
-		id++;
     }
 
     fclose(input);
