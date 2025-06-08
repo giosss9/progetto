@@ -16,5 +16,8 @@ utile.o: utile.c utile.h attivita.h lista.h data.h
 main.o: main.c attivita.h lista.h data.h utile.h
 	gcc -c main.c -std=c99
 
+run: main.out
+	./main.out input.txt
+
 clean:
 	rm -f *.o main.out

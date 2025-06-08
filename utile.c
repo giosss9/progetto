@@ -7,11 +7,65 @@
 #define MAX_LINE 512
 #define MAX 100
 
+// Restituisce 1 se il giorno è valido per il mese e l'anno forniti, altrimenti 0
+int giorno_valido(int giorno, int mese, int anno) {
+    // Giorni standard per ogni mese (indice 0 = gennaio, 1 = febbraio, ..., 11 = dicembre)
+    int giorni_per_mese[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Verifica se l'anno è bisestile
+    int bisestile = (anno % 4 == 0 && anno % 100 != 0) || (anno % 400 == 0);
+
+    // Se febbraio e anno bisestile, imposta 29 giorni
+    if (mese == 2 && bisestile) {
+        giorni_per_mese[1] = 29;
+    }
+
+    // Verifica che il mese sia valido (1-12)
+    if (mese < 1 || mese > 12) {
+        return 0;
+    }
+
+    // Controlla che il giorno rientri nel numero massimo per quel mese
+    if (giorno >= 1 && giorno <= giorni_per_mese[mese - 1]) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// Verifica se tutti i dati relativi a un'attività sono validi
+int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int priorita) {
+    // Controlla se il giorno è valido per il mese e l'anno (
+    if (!giorno_valido(giorno, mese, anno)) {
+        return 0;
+    }
+
+    if (mese < 1 || mese > 12) {
+        return 0;
+    }
+    if (anno < 2024 || anno > 2030) {
+        return 0;
+    }
+    if (ore < 0 || ore > 23) {
+        return 0;
+    }
+    if (tempo_stimato <= 0) {
+        return 0;
+    }
+    if (priorita < 0 || priorita > 2) {
+        return 0;
+    }
+
+    // Se tutte le condizioni sono valide
+    return 1;
+}
+
+
 attivita inserisci_attivita_da_input(int *ultimo_id) {
     char descrizione[MAX], corso[MAX];
     int giorno, mese, anno, ore, tempo_stimato, priorita;
 	int id=*ultimo_id;
-	id++;
+
     printf("Inserisci descrizione: ");
     fgets(descrizione, sizeof(descrizione), stdin);
     descrizione[strcspn(descrizione, "\n")] = 0;
@@ -43,19 +97,14 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
     while (getchar() != '\n');
 
     // Validazioni base
-     if (tempo_stimato < 0 ||
-			priorita < 0 || priorita > 2 ||
-			 ore < 0 || ore > 23 ||
-			 giorno<0 || giorno>31||
-			 mese<1 || mese>12 ||
-			 anno<2024 || anno>2030) {
+     if (dati_validi) {
         printf("Errore nei dati inseriti. Operazione annullata.\n");
         return NULL;
-        }
+     }
 
     attivita a=crea_attivita(descrizione, corso, giorno, mese, anno,
                          tempo_stimato, priorita, ore, id);
-	*ultimo_id=id;
+	*ultimo_id=id+1;
     return a;
 }
 

@@ -83,25 +83,6 @@ void stampa_lista_per_stato(lista l, int stato_richiesto) {
     printf("\n");
 }
 
-attivita cerca_attivita_per_descrizione(lista l, const char *descrizione) {
-    if (lista_vuota(l)) {
-        printf("La lista è vuota.\n");
-        return NULLITEM;
-    }
-
-    int verifica;
-    while (!lista_vuota(l)) {
-        if (l->valore != NULL) {
-            verifica = confronta_descrizione(l->valore, descrizione);
-            if (verifica == 1)
-                return l->valore;
-        }
-        l = l->successivo;
-    }
-
-    return NULLITEM;
-}
-
 attivita cerca_attivita_per_id(lista l, const int id) {
     if (lista_vuota(l)) {
         printf("La lista è vuota.\n");

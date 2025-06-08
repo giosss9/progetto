@@ -7,20 +7,23 @@
 #define MAX 100
 
 
-int main(int argc,char *argv[]){
-     if (argc != 2) {
-        printf("Uso corretto: %s <nome_file.txt>\n", argv[0]);
-        return 1;
+int main(int argc, char *argv[]) {
+    int ultimo_id = 0;
+    lista l = nuova_lista();
+
+    if (argc == 2) {
+        printf("Hai specificato il file '%s'. Vuoi caricare le attività da questo file? (s/n): ", argv[1]);
+        char risposta = getchar();
+        getchar(); // per consumare il newline
+
+        if (risposta == 's' || risposta == 'S') {
+            l = carica_attivita_da_file(argv[1], &ultimo_id);
+        }
+        // Se risponde 'n', non caricare nulla, vai direttamente al menu
     }
 
-	int ultimo_id;
-    lista l = carica_attivita_da_file(argv[1], &ultimo_id);
+    // Se non c’è file o risposta è 'n', parte comunque il menu con lista (vuota o caricata)
+    menu(l, &ultimo_id);
 
-    if (lista_vuota(l)) {
-		printf("Errore: la lista è vuota");
-        return 1;
-    }
-
-	menu(l, &ultimo_id);
-
+    return 0;
 }
