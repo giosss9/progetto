@@ -13,33 +13,25 @@ struct attivita_studio {
     char corso[MAX];
     data_ora scadenza;
     int tempo_stimato;
-    int priorita;        //0=bassa 1=media 2=alta
-    int stato;          //0=non iniziata 1=in corso 2=completata 3=in ritardo
-    data_ora tempo_inizio; //per tenere conto del tempo trascorso, viene  memoriizzato quando l'utente imposta che l'attivita è in corso
+    int priorita;
+    int stato;
+    data_ora tempo_inizio;
 };
 
-// Funzione che crea e restituisce una nuova attività.
-// I parametri includono descrizione, corso, data di scadenza, tempo stimato,
-// priorità e stato. Restituisce una struttura `attivita` inizializzata.
 attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore, int id){
 	if (d == NULL || c == NULL) {
     	printf("Errore: descrizione o corso null\n");
-    	return NULL;
+    	return NULLATTIVITA;
 	}
-	if (tempo < 0 ||
-        pr < 0 || pr > 2 ||
-        ore < 0 || ore > 23 ||
-        g<1 || g>31 ||
-        m<1 || m>12 ||
-        a<2024 || a>2031) {
+	if (!dati_validi(g,m,a,ore,tempo,pr)) {
     	printf("Errore: valori non validi\n");
-    	return NULL;
+    	return NULLATTIVITA;
 	}
 
     attivita nuova = (attivita)malloc(sizeof(struct attivita_studio));
     if (nuova == NULL) {
         printf("Errore di allocazione memoria\n");
-        return NULL;
+        return NULLATTIVITA;
     }
 
     strncpy(nuova->descrizione, d, MAX - 1);
@@ -51,19 +43,19 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
 	if (nuova->scadenza == NULL) {
     	printf("Errore nella creazione della data\n");
     	free(nuova);
-    	return NULL;
+    	return NULLATTIVITA;
 	}
 
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
     nuova->stato = 0;
-	nuova->id=id;
+	nuova->id = id;
+    nuova->tempo_inizio = NULL;
     return nuova;
 }
 
-//Funzione che stampa l'attivita passata come argomento e non restituisce niente
 void stampa_attivita(attivita a) {
-    if (a == NULL) {
+    if (a == NULLATTIVITA) {
         printf("Attività non valida (NULL)\n");
         return;
     }
@@ -74,7 +66,6 @@ void stampa_attivita(attivita a) {
     printf("Scadenza: %02d/%02d/%04d\n", rit_giorno(a->scadenza), rit_mese(a->scadenza), rit_anno(a->scadenza));
     printf("Tempo stimato: %d ore\n", a->tempo_stimato);
 
-    // Stampa priorità in formato leggibile
     printf("Priorità: ");
     switch (a->priorita) {
         case 0: printf("bassa\n"); break;
@@ -83,7 +74,6 @@ void stampa_attivita(attivita a) {
         default: printf("sconosciuta\n"); break;
     }
 
-    // Stampa stato in formato leggibile
     printf("Stato: ");
     switch (a->stato) {
         case 0: printf("non iniziata\n"); break;
@@ -94,78 +84,53 @@ void stampa_attivita(attivita a) {
     printf("----------------------------------------\n");
 }
 
-
-
-//Funzioni che ritornano le variabili di attivita
 char* rit_descrizione(attivita a) {
-    char *descr = NULL;
-    if (a != NULL)
-        descr = a->descrizione;
-    return descr;
+    if (a == NULLATTIVITA) return NULL;
+    return a->descrizione;
 }
 
 char* rit_corso(attivita a) {
-    char *corso = NULL;
-    if (a != NULL)
-        corso = a->corso;
-    return corso;
+    if (a == NULLATTIVITA) return NULL;
+    return a->corso;
 }
 
 data_ora rit_scadenza(attivita a) {
-    data_ora d = NULL;
-    if (a != NULL)
-        d = a->scadenza;
-    return d;
+    if (a == NULLATTIVITA) return NULL;
+    return a->scadenza;
 }
 
 int rit_tempo_stimato(attivita a) {
-    int tempo = -1;
-    if (a != NULL)
-        tempo = a->tempo_stimato;
-    return tempo;
+    if (a == NULLATTIVITA) return -1;
+    return a->tempo_stimato;
 }
 
 int rit_priorita(attivita a) {
-    int priorita = -1;
-    if (a != NULL)
-        priorita = a->priorita;
-    return priorita;
+    if (a == NULLATTIVITA) return -1;
+    return a->priorita;
 }
 
 int rit_stato(attivita a) {
-    int stato = -1;
-    if (a != NULL)
-        stato = a->stato;
-    return stato;
+    if (a == NULLATTIVITA) return -1;
+    return a->stato;
 }
 
 int rit_id(attivita a) {
-    int id = -1;
-    if (a != NULL)
-        id = a->id;
-    return id;
+    if (a == NULLATTIVITA) return -1;
+    return a->id;
 }
 
 data_ora rit_tempo_inizio(attivita a) {
-    data_ora t = NULL;
-    if (a != NULL)
-        t = a->tempo_inizio;
-    return t;
+    if (a == NULLATTIVITA) return NULL;
+    return a->tempo_inizio;
 }
 
-// Confronta la descrizione dell'attività con quella fornita esattamente (case-sensitive).
-// Restituisce 1 se le stringhe coincidono perfettamente, altrimenti 0.
-// Gestisce anche eventuali puntatori NULL per evitare errori di segmentazione.
 int confronta_descrizione(attivita a, const char *descrizione) {
-    int risultato = 0;
-    if (a != NULL && descrizione != NULL)
-        risultato = strcmp(a->descrizione, descrizione) == 0;
-    return risultato;
+    if (a == NULLATTIVITA || descrizione == NULL) return 0;
+    return strcmp(a->descrizione, descrizione) == 0;
 }
-
 
 void imposta_stato(attivita a, int stato) {
-	if (a == NULL) return;
+	if (a == NULLATTIVITA) return;
     if (stato < 0 || stato > 3) {
         printf("Stato non valido\n");
         return;
@@ -174,20 +139,18 @@ void imposta_stato(attivita a, int stato) {
 }
 
 void imposta_tempo_inizio(attivita a) {
-    if (a == NULL) return;
+    if (a == NULLATTIVITA) return;
 
-    // Se c'era già un tempo_inizio, libera la memoria per evitare perdite
     if (a->tempo_inizio != NULL) {
         free(a->tempo_inizio);
         a->tempo_inizio = NULL;
     }
 
-    // Ottieni data_ora corrente e assegnala
     a->tempo_inizio = ottieni_data_ora();
 }
 
 void libera_attivita(attivita a) {
-    if (a == NULL) return;
+    if (a == NULLATTIVITA) return;
 
     if (a->scadenza != NULL)
 		libera_data_ora(a->scadenza);
@@ -197,4 +160,3 @@ void libera_attivita(attivita a) {
 
     free(a);
 }
-

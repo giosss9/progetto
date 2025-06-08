@@ -2,7 +2,7 @@
 #define ATTIVITA_H
 
 #include "data.h"
-#define NULLITEM NULL
+#define NULLATTIVITA NULL
 
 typedef struct attivita_studio *attivita;
 
