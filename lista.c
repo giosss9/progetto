@@ -86,7 +86,7 @@ void stampa_lista_per_stato(lista l, int stato_richiesto) {
 attivita cerca_attivita_per_id(lista l, const int id) {
     if (lista_vuota(l)) {
         printf("La lista è vuota.\n");
-        return NULLITEM;
+        return NULLATTIVITA;
     }
 
     while (!lista_vuota(l)) {
@@ -97,7 +97,7 @@ attivita cerca_attivita_per_id(lista l, const int id) {
         l = l->successivo;
     }
 
-    return NULLITEM;
+    return NULLATTIVITA;
 }
 
 void libera_lista(lista l) {
