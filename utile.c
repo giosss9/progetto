@@ -43,7 +43,7 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
     if (mese < 1 || mese > 12) {
         return 0;
     }
-    if (anno < 2024 || anno > 2030) {
+    if (anno < 2025 || anno > 2030) {
         return 0;
     }
     if (ore < 0 || ore > 23) {
@@ -78,6 +78,11 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
 
 
 attivita inserisci_attivita_da_input(int *ultimo_id) {
+	if(ultimo_id==NULL){
+		printf("Attenzione ultimo_id non punta ad una variabile");
+		return NULL;
+	}
+
     char descrizione[MAX], corso[MAX];
     char buffer[100];
     int giorno, mese, anno, ore, tempo_stimato, priorita;
@@ -140,6 +145,11 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
 }
 
 lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
+    if (ultimo_id == NULL) {
+        printf("Attenzione ultimo_id non punta ad una variabile\n");
+        return NULL;
+    }
+
     FILE *input = fopen(nome_file, "r");
     if (input == NULL) {
         printf("Impossibile aprire il file %s\n", nome_file);
@@ -149,38 +159,45 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
     char riga[MAX_LINE];
     int riga_num = 0;
     lista l = nuova_lista();
-	int id=0;
+    int id = 0;
+
     while (fgets(riga, MAX_LINE, input) != NULL) {
         riga_num++;
+
+        // Rimuovi newline
+        riga[strcspn(riga, "\r\n")] = 0;
+
+        // Ignora righe vuote o che iniziano con '#'
+        if (riga[0] == '\0' || riga[0] == '#') {
+            continue;
+        }
 
         char descrizione[MAX], corso[MAX];
         int giorno, mese, anno, tempo_stimato, priorita, ore;
 
-        riga[strcspn(riga, "\n")] = 0;
-
-        if (sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d;",
+        if (sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d",
                    descrizione, corso,
                    &giorno, &mese, &anno, &ore,
                    &tempo_stimato, &priorita) != 8) {
-            fprintf(stderr, "Riga %d: formato riga non valido: %s\n", riga_num, riga);
+            printf("Riga %d: formato riga non valido: %s\n", riga_num, riga);
             continue;
-                   }
+        }
 
-       	if (dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)){
-			 attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
-                                       tempo_stimato, priorita, ore, id);
-        	l = cons_lista(nuova, l);
-			id++;
-     	}else
-			printf("Errore nei dati inseriti nella riga %d. Attivita non inserita.\n",riga_num);
-
+        if (dati_validi(giorno, mese, anno, ore, tempo_stimato, priorita)) {
+            attivita nuova = crea_attivita(descrizione, corso, giorno, mese, anno,
+                                           tempo_stimato, priorita, ore, id);
+            l = cons_lista(nuova, l);
+            id++;
+        } else {
+            printf("Errore nei dati inseriti nella riga %d. Attivita non inserita.\n", riga_num);
+        }
     }
 
     fclose(input);
-
-	*ultimo_id=id;
+    *ultimo_id = id;
     return l;
 }
+
 // Verifica se l'attività è in ritardo, se lo è cambia lo stato
 void controlla_ritardo(attivita a) {
 
@@ -192,6 +209,38 @@ void controlla_ritardo(attivita a) {
     if (confronto > 0 && stato != 3) {
         imposta_stato(a,3);
     }
+}
+//Calcola il progresso di un attivita, ritorna la percentuale
+int calcolo_progresso(attivita a, data_ora trascorso){
+	int stimato = rit_tempo_stimato(a);
+
+    if (trascorso == NULL) {
+    	printf("Errore: tempo trascorso non calcolabile\n");
+        return -1;
+    }
+
+	int ore_trascorse=rit_ore(trascorso);
+	//Calcolo percentuale
+    int minuti_trascorsi = ore_trascorse * 60 + rit_minuti(trascorso);
+	int minuti_stimati = stimato * 60;
+	int percentuale = (minuti_stimati > 0) ? (minuti_trascorsi * 100 / minuti_stimati) : 0;
+
+	if (minuti_trascorsi < 60) {
+    	printf("Tempo trascorso: %d minuti\n", minuti_trascorsi);
+	} else {
+   		printf("Tempo trascorso: %.1f ore\n", minuti_trascorsi / 60.0);
+	}
+
+	if (ore_trascorse >= stimato) {
+		printf("Stato: POSSIBILE RITARDO (tempo stimato superato)\n");
+	} else {
+		printf("Stato: IN CORSO\n");
+    }
+
+	if (percentuale > 100) {
+    	percentuale = 100;
+	}
+	return percentuale;
 }
 
 void mostra_progresso(lista l) {
@@ -220,43 +269,21 @@ void mostra_progresso(lista l) {
                 printf("Tempo stimato: %d ore\n", stimato);
 
                 if (stato == 1) { // Solo per "in corso"
-                    data_ora inizio = rit_tempo_inizio(a);
-                    data_ora trascorso = calcolo_tempo_trascorso(inizio);
-                    if (trascorso == NULL) {
-                        printf("Errore: tempo trascorso non calcolabile\n");
-                        continue;
+					data_ora inizio = rit_tempo_inizio(a);
+    				data_ora trascorso = calcolo_tempo_trascorso(inizio);
+
+                    int percentuale=calcolo_progresso(a,trascorso);
+					if(percentuale==-1)
+						printf("Errore nel calcolo del progresso");
+					 // Barra di progresso
+ 					printf("Progresso: [");
+                    int lunghezza_barra = 20;
+                    int riempimento = percentuale * lunghezza_barra / 100;
+                    for (int i = 0; i < lunghezza_barra; ++i) {
+                        printf(i < riempimento ? "#" : "-");
                     }
 
-					int ore_trascorse=rit_ore(trascorso);
-					//Calcolo percentuale
-                    int minuti_trascorsi = ore_trascorse * 60 + rit_minuti(trascorso);
-					int minuti_stimati = stimato * 60;
-					int percentuale = (minuti_stimati > 0) ? (minuti_trascorsi * 100 / minuti_stimati) : 0;
-
-					if (minuti_trascorsi < 60) {
-    					printf("Tempo trascorso: %d minuti\n", minuti_trascorsi);
-					} else {
-    					printf("Tempo trascorso: %.1f ore\n", minuti_trascorsi / 60.0);
-					}
-
-
-                    // Barra di progresso
-                    printf("Progresso: [");
-                    int barLength = 20;
-                    int filled = percentuale * barLength / 100;
-                    for (int i = 0; i < barLength; ++i) {
-                        printf(i < filled ? "#" : "-");
-                    }
-					if (percentuale > 100) {
-    					percentuale = 100;
-					}
                     printf("] %d%%\n", percentuale);
-
-                    if (ore_trascorse >= stimato) {
-                        printf("Stato: POSSIBILE RITARDO (tempo stimato superato)\n");
-                    } else {
-                        printf("Stato: IN CORSO\n");
-                    }
                 } else {
                     // Stato testuale per altri stati
                     switch (stato) {
@@ -352,7 +379,7 @@ void genera_report_settimanale(lista l) {
                 trovata = 1;
             }
 
-            corr = coda_lista(corr);  // ✅ uso incapsulato
+            corr = coda_lista(corr);
         }
 
         if (!trovata) {
@@ -382,6 +409,11 @@ attivita chiedi_attivita_per_id(lista l) {
 }
 
 void menu(lista l, int *ultimo_id) {
+	if(ultimo_id==NULL){
+		printf("Attenzione ultimo_id non punta ad una variabile");
+		return;
+	}
+
     int scelta;
     do {
         printf("\n=================MENU===================\n");
