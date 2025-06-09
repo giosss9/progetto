@@ -1,7 +1,7 @@
 main.out: main.o attivita.o lista.o data.o utile.o
 	gcc main.o attivita.o lista.o data.o utile.o -o main.out
 
-attivita.o: attivita.c attivita.h data.h
+attivita.o: attivita.c attivita.h data.h utile.h
 	gcc -c attivita.c
 
 lista.o: lista.c lista.h attivita.h

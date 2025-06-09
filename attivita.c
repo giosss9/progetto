@@ -4,6 +4,7 @@
 #include <strings.h>
 #include "attivita.h"
 #include "data.h"
+#include "utile.h"
 
 #define MAX 100
 
@@ -79,6 +80,7 @@ void stampa_attivita(attivita a) {
         case 0: printf("non iniziata\n"); break;
         case 1: printf("in corso\n"); break;
         case 2: printf("completata\n"); break;
+		case 3: printf("in ritardo\n"); break;
         default: printf("sconosciuto\n"); break;
     }
     printf("----------------------------------------\n");
@@ -122,11 +124,6 @@ int rit_id(attivita a) {
 data_ora rit_tempo_inizio(attivita a) {
     if (a == NULLATTIVITA) return NULL;
     return a->tempo_inizio;
-}
-
-int confronta_descrizione(attivita a, const char *descrizione) {
-    if (a == NULLATTIVITA || descrizione == NULL) return 0;
-    return strcmp(a->descrizione, descrizione) == 0;
 }
 
 void imposta_stato(attivita a, int stato) {

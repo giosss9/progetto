@@ -9,8 +9,6 @@ typedef struct attivita_studio *attivita;
 attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore, int id);
 void stampa_attivita(attivita a);
 
-int confronta_descrizione(attivita a, const char *descrizione);
-
 char* rit_descrizione(attivita a);
 char* rit_corso(attivita a);
 data_ora rit_scadenza(attivita a);
