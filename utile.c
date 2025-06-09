@@ -363,6 +363,23 @@ void genera_report_settimanale(lista l) {
     printf("\n========================================\n");
 }
 
+attivita chiedi_attivita_per_id(lista l) {
+	stampa_lista(l);
+    int id;
+    attivita a;
+
+    while (1) {
+        printf("Inserisci l'id dell'attività: \n");
+        scanf("%d", &id);
+
+        a = cerca_attivita_per_id(l, id);
+        if (a == NULLATTIVITA) {
+            printf("Attività non trovata.\n");
+        } else {
+            return a;
+        }
+    }
+}
 
 void menu(lista l, int *ultimo_id) {
     int scelta;
@@ -372,6 +389,7 @@ void menu(lista l, int *ultimo_id) {
         printf("2. Mostra stato avanzamento\n");
         printf("3. Aggiorna stato\n");
         printf("4. Inserisci nuova attivita\n");
+		printf("5. Rimuovi un attivita\n");
         printf("0. Esci\n");
         printf("========================================\n");
         printf("Scelta: ");
@@ -386,45 +404,40 @@ void menu(lista l, int *ultimo_id) {
                 mostra_progresso(l);
                 break;
             case 3:
-				stampa_lista(l);
-				int id, nuovo, rit;
+				int nuovo, rit;
 				attivita a;
 				int v = 1;
 
 				while (v == 1) {
-    				int k = 1;
-    				while (k == 1) {
-        				printf("Inserisci l'id dell'attività che vuoi cambiare: \n");
-        				scanf("%d", &id);
-        				a = cerca_attivita_per_id(l, id);
-        				if (a == NULLATTIVITA) {
-            				printf("Attività non trovata.\n");
-        				} else {
-            				k = 0; // attività trovata
-        				}
-    				}
+    				a = chiedi_attivita_per_id(l);
 
     				printf("Inserisci il nuovo stato dell'attività [1 = In Corso, 2 = Completata]: \n");
     				scanf("%d", &nuovo);
 
-				    rit = aggiorna_stato(a, nuovo);
+    				rit = aggiorna_stato(a, nuovo);
 
- 			 	  if (rit == 0) {
-        				v = 0; // tutto ok, esce dal ciclo
+    				if (rit == 0) {
+        				v = 0; // tutto ok
     				} else if (rit == 1) {
         				printf("Riprova con un valore valido (1 o 2).\n");
     				} else if (rit == 2) {
         				printf("Non è possibile aggiornare questa attività.\n");
-        				v = 0;
+        			v = 0;
     				}
 				}
-
 				break;
             case 4:
                 attivita nuova = inserisci_attivita_da_input(ultimo_id);
                 if (nuova != NULLATTIVITA) {
                     l = cons_lista(nuova, l);
                 }
+				break;
+			case 5:
+				printf("Quale attivita desideri rimuovere?\n");
+				attivita a_da_rimuovere;
+				a_da_rimuovere = chiedi_attivita_per_id(l);
+				int id = rit_id(a_da_rimuovere);
+				l = rimuovi_attivita_per_id(l,id);
 				break;
 			case 0:
                 libera_lista(l);

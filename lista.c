@@ -100,6 +100,34 @@ attivita cerca_attivita_per_id(lista l, const int id) {
     return NULLATTIVITA;
 }
 
+lista rimuovi_attivita_per_id(lista l, int id) {
+    if (lista_vuota(l)) return NULL;
+
+    // Caso 1: primo nodo è quello da rimuovere
+    if (rit_id(l->valore) == id) {
+        lista nuovo_inizio = l->successivo;
+        libera_attivita(l->valore);
+        free(l);
+        return nuovo_inizio;
+    }
+
+    // Caso 2: nodo da rimuovere è in mezzo o in fondo
+    lista corrente = l;
+    while (corrente->successivo != NULL) {
+        if (rit_id(corrente->successivo->valore) == id) {
+            lista da_rimuovere = corrente->successivo;
+            corrente->successivo = da_rimuovere->successivo;
+            libera_attivita(da_rimuovere->valore);
+            free(da_rimuovere);
+            break;
+        }
+        corrente = corrente->successivo;
+    }
+
+    return l;
+}
+
+
 void libera_lista(lista l) {
     while (!lista_vuota(l)) {
         lista temp = l;
