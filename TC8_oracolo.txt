@@ -1,0 +1,92 @@
+============Report Settimanale==========
+
+SETTIMANA CORRENTE:
+ID: 2
+Corso: Matematica
+Descrizione: Fare esercizi
+Scadenza: 14/06/2025
+Tempo stimato: 3 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+ID: 1
+Corso: Informatica
+Descrizione: Studiare programmazione
+Scadenza: 11/06/2025
+Tempo stimato: 12 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+ID: 0
+Corso: Matematica
+Descrizione: Ripassare derivate
+Scadenza: 13/06/2025
+Tempo stimato: 4 ore
+Priorità: alta
+Stato: non iniziata
+----------------------------------------
+
+SETTIMANA PROSSIMA
+ID: 5
+Corso: Fisica
+Descrizione: Studio gruppo
+Scadenza: 17/06/2025
+Tempo stimato: 2 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+ID: 4
+Corso: Inglese
+Descrizione: Verifica inglese
+Scadenza: 21/06/2025
+Tempo stimato: 2 ore
+Priorità: bassa
+Stato: non iniziata
+----------------------------------------
+ID: 3
+Corso: Storia
+Descrizione: Preparare presentazione
+Scadenza: 20/06/2025
+Tempo stimato: 6 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+
+SETTIMANE FUTURE
+ID: 8
+Corso: Informatica
+Descrizione: Progetto finale
+Scadenza: 27/08/2025
+Tempo stimato: 10 ore
+Priorità: alta
+Stato: non iniziata
+----------------------------------------
+ID: 7
+Corso: Letteratura
+Descrizione: Leggere capitolo 3
+Scadenza: 04/07/2025
+Tempo stimato: 3 ore
+Priorità: bassa
+Stato: non iniziata
+----------------------------------------
+ID: 6
+Corso: Tecnologia
+Descrizione: Laboratorio Arduino
+Scadenza: 25/06/2025
+Tempo stimato: 5 ore
+Priorità: alta
+Stato: non iniziata
+----------------------------------------
+
+ATTIVITA SCADUTE
+ID: 9
+Corso: Italiano
+Descrizione: Scrivere tema
+Scadenza: 05/06/2025
+Tempo stimato: 3 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+
+========================================
+10

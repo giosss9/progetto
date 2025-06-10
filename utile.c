@@ -347,13 +347,13 @@ void genera_report_settimanale(lista l) {
     int settimana_corrente = numero_settimana(oggi);
     int anno_corrente = rit_anno(oggi);
 
-    printf("=========📆 Report Settimanale==========\n");
+    printf("============Report Settimanale==========\n");
 
     const char* categorie[] = {
-        "Settimana corrente:",
-        "Settimana prossima:",
-        "Settimane future:",
-        "Attività scadute:"
+        "SETTIMANA CORRENTE:",
+        "SETTIMANA PROSSIMA",
+        "SETTIMANE FUTURE",
+        "ATTIVITA SCADUTE"
     };
 
     for (int categoria = 0; categoria < 4; categoria++) {

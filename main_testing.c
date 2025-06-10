@@ -36,9 +36,122 @@ int confronta_file(const char* file1, const char* file2) {
     return 1; // file uguali
 }
 
+
+int test_case_rimozione(char *tc_id, int n){
+	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
+	int ris;
+	int num_attivita;
+	// costruiamo i nomi dei file
+	sprintf(input_fnome, "%s_input.txt", tc_id);
+	sprintf(output_fnome, "%s_output.txt", tc_id);
+	sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
+
+	// allochiamo memoria per la lista
+	lista test_lista=nuova_lista();
+
+	int id=0;
+
+	// Salva stdout originale
+	FILE* original_stdout = stdout;
+
+	// Redirige stdout nel file
+	FILE* out = freopen(output_fnome, "w", stdout);
+	if (!out) {
+		fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
+		return 0;
+	}
+
+	// carica file di input
+	test_lista=carica_attivita_da_file(input_fnome,&id);
+
+	//Rimuoviamo attivita con id 3
+	test_lista=rimuovi_attivita_per_id(test_lista,3);
+
+	stampa_lista(test_lista);
+
+	//Per testare se sono state inserite n attivita
+	num_attivita=dimensione_lista(test_lista);
+	if(n!=num_attivita)
+		return 0;
+
+	printf("%d",num_attivita);
+
+	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
+	fflush(stdout);
+	fclose(out);
+	stdout = original_stdout;
+
+	// Ora confronta l'output generato con l'oracolo
+	ris = confronta_file(oracolo_fnome, output_fnome);
+
+	libera_lista(test_lista);
+
+	return ris;
+}
+
+
+int test_case_report(char *tc_id, int n){
+	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
+	int ris;
+	int num_attivita;
+
+	// costruiamo i nomi dei file
+	sprintf(input_fnome, "%s_input.txt", tc_id);
+	sprintf(output_fnome, "%s_output.txt", tc_id);
+	sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
+
+	// allochiamo memoria per la lista
+	lista test_lista=nuova_lista();
+
+	int id=0;
+
+	// Salva stdout originale
+	FILE* original_stdout = stdout;
+
+	// Redirige stdout nel file
+	FILE* out = freopen(output_fnome, "w", stdout);
+	if (!out) {
+		fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
+		return 0;
+	}
+
+
+	// carica file di input
+	test_lista=carica_attivita_da_file(input_fnome,&id);
+
+	//Modifichiamo la scadenza dell'attivita che ha id 9 per farla apparire nella senzione attivita scadute
+	attivita ritardo=cerca_attivita_per_id(test_lista, 9);
+	data_ora nuova_scadenza=rit_scadenza(ritardo);
+	int nuovo_giorno=rit_giorno(nuova_scadenza);
+	imposta_giorno(nuova_scadenza, nuovo_giorno-10);
+	//aggiorna_stato(ritardo,1);
+
+	genera_report_settimanale(test_lista);
+
+	//Per testare se sono state inserite n attivita
+	num_attivita=dimensione_lista(test_lista);
+	if(n!=num_attivita)
+		return 0;
+
+	printf("%d",num_attivita);
+
+	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
+	fflush(stdout);
+	fclose(out);
+	stdout = original_stdout;
+
+	// Ora confronta l'output generato con l'oracolo
+	ris = confronta_file(oracolo_fnome, output_fnome);
+
+	libera_lista(test_lista);
+
+	return ris;
+}
+
 int test_case_mostra_progresso(char *tc_id, int n){
 	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
 	int ris;
+	int num_attivita;
 
 	// costruiamo i nomi dei file
 	sprintf(input_fnome, "%s_input.txt", tc_id);
@@ -83,8 +196,12 @@ int test_case_mostra_progresso(char *tc_id, int n){
 
 	mostra_progresso(test_lista);
 
-	//Per testare se sono state inserite 4 attivita
-	printf("%d",id);
+	//Per testare se sono state inserite n attivita
+	num_attivita=dimensione_lista(test_lista);
+	if(n!=num_attivita)
+		return 0;
+
+	printf("%d",num_attivita);
 
 	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
 	fflush(stdout);
@@ -191,16 +308,16 @@ int test_case_progresso(char *tc_id, int n) {
 
 
 int test_case_inserimento(char *tc_id, int n){
-   char input_fnome[M], output_fnome[M], oracolo_fnome[M];
-   int ris;
+   	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
+   	int ris;
+	int num_attivita;
+   	// costruiamo i nomi dei file
+   	sprintf(input_fnome, "%s_input.txt", tc_id);
+   	sprintf(output_fnome, "%s_output.txt", tc_id);
+   	sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
 
-   // costruiamo i nomi dei file
-   sprintf(input_fnome, "%s_input.txt", tc_id);
-   sprintf(output_fnome, "%s_output.txt", tc_id);
-   sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
-
-   // allochiamo memoria per la lista
-   lista test_lista=nuova_lista();
+   	// allochiamo memoria per la lista
+   	lista test_lista=nuova_lista();
 
 	int id=0;
 
@@ -220,7 +337,13 @@ int test_case_inserimento(char *tc_id, int n){
 	test_lista=carica_attivita_da_file(input_fnome,&id);
 
 	stampa_lista(test_lista);
-	printf("%d",id);
+
+	//Per testare se sono state inserite n attivita
+	num_attivita=dimensione_lista(test_lista);
+	if(n!=num_attivita)
+		return 0;
+
+	printf("%d",num_attivita);
 
 	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
 	fflush(stdout);
@@ -263,10 +386,16 @@ int main(int argc, char *argv[])
         	pass = test_case_inserimento(tc_id, n);
 
 		else if(i<7)
-			pass=test_case_progresso(tc_id, n);
+			pass = test_case_progresso(tc_id, n);
 
 		if(i==7)
-			pass=test_case_mostra_progresso(tc_id, n);
+			pass = test_case_mostra_progresso(tc_id, n);
+
+		if(i==8)
+			pass = test_case_report(tc_id,n);
+
+		if(i==9)
+			pass = test_case_rimozione(tc_id,n);
 
         fprintf(risultati,"%s ", tc_id);
         if(pass == 1)

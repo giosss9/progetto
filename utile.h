@@ -17,4 +17,6 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
 
 void mostra_progresso(lista l);
 
+void genera_report_settimanale(lista l);
+
 #endif
