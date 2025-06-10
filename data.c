@@ -215,6 +215,13 @@ void imposta_ore(data_ora d, int ore){
 	d->ore=ore;
 }
 
+void imposta_giorno(data_ora d, int giorno){
+	if(giorno<0)
+		return;
+
+	d->giorno=giorno;
+}
+
 void libera_data_ora(data_ora d) {
     if (d != NULL) {
         free(d);

@@ -25,7 +25,9 @@ int rit_ore(data_ora d);
 int rit_minuti(data_ora d);
 int rit_secondi(data_ora d);
 
+//Per il testing
 void imposta_ore(data_ora d, int ore);
+void imposta_giorno(data_ora d, int giorno);
 
 void libera_data_ora(data_ora d);
 #endif // DATA_H

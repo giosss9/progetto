@@ -259,10 +259,10 @@ void calcolo_progresso(attivita a, data_ora trascorso){
 
 void mostra_progresso(lista l) {
     const char* intestazioni[] = {
-        "\n Attività NON INIZIATE:",
-        "\n Attività IN CORSO:",
-        "\n Attività COMPLETATE:",
-        "\n Attività IN RITARDO:"
+        "\nAttività NON INIZIATE:",
+        "\nAttività IN CORSO:",
+        "\nAttività COMPLETATE:",
+        "\nAttività IN RITARDO:"
     };
 
     for (int stato_atteso = 0; stato_atteso <= 3; stato_atteso++) {
@@ -289,6 +289,8 @@ void mostra_progresso(lista l) {
                    calcolo_progresso(a,trascorso);
 
                 } else {
+					data_ora scad=rit_scadenza(a);
+					printf("Data di scadenza:%d/%d/%d\n",rit_giorno(scad),rit_mese(scad),rit_anno(scad));
                     // Stato testuale per altri stati
                     switch (stato) {
                         case 0: printf("Stato: NON INIZIATA\n"); break;

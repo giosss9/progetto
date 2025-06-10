@@ -36,6 +36,69 @@ int confronta_file(const char* file1, const char* file2) {
     return 1; // file uguali
 }
 
+int test_case_mostra_progresso(char *tc_id, int n){
+	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
+	int ris;
+
+	// costruiamo i nomi dei file
+	sprintf(input_fnome, "%s_input.txt", tc_id);
+	sprintf(output_fnome, "%s_output.txt", tc_id);
+	sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
+
+	// allochiamo memoria per la lista
+	lista test_lista=nuova_lista();
+
+	int id=0;
+
+	// Salva stdout originale
+	FILE* original_stdout = stdout;
+
+	// Redirige stdout nel file
+	FILE* out = freopen(output_fnome, "w", stdout);
+	if (!out) {
+		fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
+		return 0;
+	}
+
+
+	// carica file di input
+	test_lista=carica_attivita_da_file(input_fnome,&id);
+
+	//Impostiamo l'attivita che ha id 1 in corso
+	attivita in_corso=cerca_attivita_per_id(test_lista, 1);
+	aggiorna_stato(in_corso,1);
+
+	//Impostiamo l'attivita che ha id 2 completata
+	attivita completata=cerca_attivita_per_id(test_lista, 2);
+	aggiorna_stato(completata,1); //Perche deve passare prima da in corso
+	aggiorna_stato(completata,2);
+
+	//Impostiamo l'attivita che ha id 3 in ritardo, per farlo impostiamo la data di scadenza a 10 giorni prima
+	attivita ritardo=cerca_attivita_per_id(test_lista, 3);
+	data_ora nuova_scadenza=rit_scadenza(ritardo);
+	int nuovo_giorno=rit_giorno(nuova_scadenza);
+	imposta_giorno(nuova_scadenza, nuovo_giorno-10);
+	//In questo modo controlliamo anche che la funzione controlli bene che un'attivita è in ritardo
+	aggiorna_stato(ritardo,1);
+
+	mostra_progresso(test_lista);
+
+	//Per testare se sono state inserite 4 attivita
+	printf("%d",id);
+
+	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
+	fflush(stdout);
+	fclose(out);
+	stdout = original_stdout;
+
+	// Ora confronta l'output generato con l'oracolo
+	ris = confronta_file(oracolo_fnome, output_fnome);
+
+	libera_lista(test_lista);
+
+	return ris;
+}
+
 int test_case_progresso(char *tc_id, int n) {
     char input_fnome[M], output_fnome[M], oracolo_fnome[M];
     int ris;
@@ -192,14 +255,18 @@ int main(int argc, char *argv[])
        return -1;
    }
 
-	int i=0; //per differenziare i tipi di test case nel ciclo
-   // Scansione del file di input nel ciclo while.
+	int i=1; //per differenziare i tipi di test case nel ciclo
 
+   // Scansione del file di input nel ciclo while.
    while(fscanf(test_suite, "%s%d", tc_id, &n) == 2){
-		if(i<4)
+		if(i<=4)
         	pass = test_case_inserimento(tc_id, n);
-		else
+
+		else if(i<7)
 			pass=test_case_progresso(tc_id, n);
+
+		if(i==7)
+			pass=test_case_mostra_progresso(tc_id, n);
 
         fprintf(risultati,"%s ", tc_id);
         if(pass == 1)
