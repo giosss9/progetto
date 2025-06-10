@@ -2,3 +2,5 @@ TC1 2
 TC2 0
 TC3 0
 TC4 0
+TC5 2
+TC6 5

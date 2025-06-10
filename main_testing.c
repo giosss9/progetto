@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+
+#include "attivita.h"
+#include "data.h"
 #include "lista.h"
 #include "utile.h"
 
+#define MAX_LINE 512
+#define MAX 100
 # define M 20
 
 int confronta_file(const char* file1, const char* file2) {
@@ -31,6 +36,96 @@ int confronta_file(const char* file1, const char* file2) {
     return 1; // file uguali
 }
 
+int test_case_progresso(char *tc_id, int n) {
+    char input_fnome[M], output_fnome[M], oracolo_fnome[M];
+    int ris;
+
+    sprintf(input_fnome, "%s_input.txt", tc_id);
+    sprintf(output_fnome, "%s_output.txt", tc_id);
+    sprintf(oracolo_fnome, "%s_oracolo.txt", tc_id);
+
+    FILE *input = fopen(input_fnome, "r");
+    if (input == NULL) {
+        fprintf(stderr, "Impossibile aprire il file %s\n", input_fnome);
+        return 0;
+    }
+
+    char riga[MAX_LINE];
+    int riga_num = 0;
+    int id = 0;
+    attivita test_att = NULLATTIVITA;
+
+    while (fgets(riga, MAX_LINE, input) != NULL) {
+        riga_num++;
+        riga[strcspn(riga, "\r\n")] = 0;
+        if (riga[0] == '\0' || riga[0] == '#') continue;
+
+        char descrizione[MAX], corso[MAX];
+        int giorno, mese, anno, tempo_stimato, priorita, ore;
+
+        int letti = sscanf(riga, "%99[^;];%99[^;];%d;%d;%d;%d;%d;%d",
+                           descrizione, corso,
+                           &giorno, &mese, &anno, &ore,
+                           &tempo_stimato, &priorita);
+
+        if (letti != 8) {
+            fprintf(stderr, "Formato errato alla riga %d: %s\n", riga_num, riga);
+            fclose(input);
+            return 0;
+        }
+
+        test_att = crea_attivita(descrizione, corso, giorno, mese, anno,
+                                 tempo_stimato, priorita, ore, id);
+
+        if (test_att == NULLATTIVITA) {
+            fprintf(stderr, "Errore: nessuna attività valida trovata.\n");
+            fclose(input);
+            return 0;
+        }
+
+        break;
+    }
+    fclose(input);
+
+    // Salva stdout originale
+    FILE* original_stdout = stdout;
+
+    // Redirige stdout nel file
+    FILE* out = freopen(output_fnome, "w", stdout);
+    if (!out) {
+        fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
+        return 0;
+    }
+
+	//aggiorna stato attivita
+	aggiorna_stato(test_att, 1);
+
+	//calcolo tempo trascorso
+	data_ora inizio = rit_tempo_inizio(test_att);
+	data_ora trascorso = calcolo_tempo_trascorso(inizio);
+
+	int ore_attuali = rit_ore(inizio);
+
+	//Per far apparire n ore piu avanti
+	imposta_ore(trascorso, n);
+
+    // Scrive su file
+    calcolo_progresso(test_att, trascorso);
+
+    //Flush per essere sicuiri che venga tutto scritto e ripristina stdout
+    fflush(stdout);
+    fclose(out);
+
+	//Ritorno a stdout originale per permettere ad altre funzioni di redirigere ancora stdout
+    stdout = original_stdout;
+
+    //Confronta
+    ris = confronta_file(oracolo_fnome, output_fnome);
+
+    libera_attivita(test_att);
+    return ris;
+}
+
 
 int test_case_inserimento(char *tc_id, int n){
    char input_fnome[M], output_fnome[M], oracolo_fnome[M];
@@ -47,12 +142,16 @@ int test_case_inserimento(char *tc_id, int n){
 	int id=0;
 
 
-	//Redirigo stdout nel file di output
+	// Salva stdout originale
+	FILE* original_stdout = stdout;
+
+	// Redirige stdout nel file
 	FILE* out = freopen(output_fnome, "w", stdout);
 	if (!out) {
-    	fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
-    	return 0;
+		fprintf(stderr, "Errore apertura output file: %s\n", output_fnome);
+		return 0;
 	}
+
 
 	// carica file di input
 	test_lista=carica_attivita_da_file(input_fnome,&id);
@@ -60,10 +159,10 @@ int test_case_inserimento(char *tc_id, int n){
 	stampa_lista(test_lista);
 	printf("%d",id);
 
-	//Mi assicuro che sia tutto scritto
+	//Flush per essere sicuri che venga tutto scritto e ripristina stdout
 	fflush(stdout);
-
-	fseek(out,0,SEEK_SET);
+	fclose(out);
+	stdout = original_stdout;
 
     // Ora confronta l'output generato con l'oracolo
     ris = confronta_file(oracolo_fnome, output_fnome);
@@ -93,16 +192,22 @@ int main(int argc, char *argv[])
        return -1;
    }
 
+	int i=0; //per differenziare i tipi di test case nel ciclo
    // Scansione del file di input nel ciclo while.
 
    while(fscanf(test_suite, "%s%d", tc_id, &n) == 2){
-        pass = test_case_inserimento(tc_id, n);
+		if(i<4)
+        	pass = test_case_inserimento(tc_id, n);
+		else
+			pass=test_case_progresso(tc_id, n);
 
         fprintf(risultati,"%s ", tc_id);
         if(pass == 1)
               fprintf(risultati, "PASS \n");
         else
               fprintf(risultati, "FAIL \n");
+
+		i++;
    }
 
    fclose(test_suite);  // chiusura file di input

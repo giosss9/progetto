@@ -1,0 +1,13 @@
+#CASO DI TEST CHE MOSTRA IL PROGRESSO DI PIU ATTIVITA
+
+#sarà l'attivita non iniziata
+Ripassare derivate;Matematica;23;06;2025;9;4;2
+
+#attivita in corso
+Preparare presentazione;Storia;24;06;2025;16;6;1
+
+#attivita completata
+Laboratorio Arduino;Tecnologia;25;06;2025;14;5;2
+
+#attivita in ritardo
+Scrivere tema;Italiano;20;06;2025;17;3;1

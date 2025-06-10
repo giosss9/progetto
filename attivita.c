@@ -136,8 +136,10 @@ void imposta_stato(attivita a, int stato) {
 }
 
 void imposta_tempo_inizio(attivita a) {
-    if (a == NULLATTIVITA) return;
-
+    if (a == NULLATTIVITA){
+		printf("Stato non aggiornato");
+	 	return;
+	}
     if (a->tempo_inizio != NULL) {
         free(a->tempo_inizio);
         a->tempo_inizio = NULL;

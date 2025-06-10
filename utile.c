@@ -211,15 +211,16 @@ void controlla_ritardo(attivita a) {
     }
 }
 //Calcola il progresso di un attivita, ritorna la percentuale
-int calcolo_progresso(attivita a, data_ora trascorso){
+void calcolo_progresso(attivita a, data_ora trascorso){
 	int stimato = rit_tempo_stimato(a);
 
     if (trascorso == NULL) {
     	printf("Errore: tempo trascorso non calcolabile\n");
-        return -1;
+        return;
     }
 
 	int ore_trascorse=rit_ore(trascorso);
+
 	//Calcolo percentuale
     int minuti_trascorsi = ore_trascorse * 60 + rit_minuti(trascorso);
 	int minuti_stimati = stimato * 60;
@@ -240,7 +241,20 @@ int calcolo_progresso(attivita a, data_ora trascorso){
 	if (percentuale > 100) {
     	percentuale = 100;
 	}
-	return percentuale;
+
+	if(percentuale==-1)
+		printf("Errore nel calcolo del progresso");
+
+		// Barra di progresso
+ 		printf("Progresso: [");
+        int lunghezza_barra = 20;
+		int riempimento = percentuale * lunghezza_barra / 100;
+        for (int i = 0; i < lunghezza_barra; ++i) {
+            printf(i < riempimento ? "#" : "-");
+        }
+
+   	printf("] %d%%\n", percentuale);
+	//return percentuale;
 }
 
 void mostra_progresso(lista l) {
@@ -272,18 +286,8 @@ void mostra_progresso(lista l) {
 					data_ora inizio = rit_tempo_inizio(a);
     				data_ora trascorso = calcolo_tempo_trascorso(inizio);
 
-                    int percentuale=calcolo_progresso(a,trascorso);
-					if(percentuale==-1)
-						printf("Errore nel calcolo del progresso");
-					 // Barra di progresso
- 					printf("Progresso: [");
-                    int lunghezza_barra = 20;
-                    int riempimento = percentuale * lunghezza_barra / 100;
-                    for (int i = 0; i < lunghezza_barra; ++i) {
-                        printf(i < riempimento ? "#" : "-");
-                    }
+                   calcolo_progresso(a,trascorso);
 
-                    printf("] %d%%\n", percentuale);
                 } else {
                     // Stato testuale per altri stati
                     switch (stato) {

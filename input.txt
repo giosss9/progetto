@@ -1,7 +1,7 @@
 #INSERIRE QUI ATTIVITA
 
 Studiare programmazione;Informatica;20;06;2025;10;12;1
-Fare esercizi;Matematica;22;06;2025;10;2;1
+Fare esercizi;Matematica;22;06;2025;10;3;1
 Leggere capitolo 3;Letteratura;4;06;2025;15;3;0
 Ripassare derivate;Matematica;23;06;2025;9;4;2
 Preparare presentazione;Storia;24;06;2025;16;6;1

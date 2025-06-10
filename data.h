@@ -25,5 +25,7 @@ int rit_ore(data_ora d);
 int rit_minuti(data_ora d);
 int rit_secondi(data_ora d);
 
+void imposta_ore(data_ora d, int ore);
+
 void libera_data_ora(data_ora d);
 #endif // DATA_H

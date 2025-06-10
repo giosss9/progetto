@@ -208,6 +208,13 @@ int rit_secondi(data_ora d) {
 
 }
 
+void imposta_ore(data_ora d, int ore){
+	if(ore<0)
+		return;
+
+	d->ore=ore;
+}
+
 void libera_data_ora(data_ora d) {
     if (d != NULL) {
         free(d);

@@ -1,0 +1,4 @@
+Stato aggiornato correttamente.
+Tempo trascorso: 5.0 ore
+Stato: POSSIBILE RITARDO (tempo stimato superato)
+Progresso: [####################] 100%
