@@ -7,7 +7,23 @@
 #define MAX_LINE 512
 #define MAX 100
 
-// Restituisce 1 se il giorno è valido per il mese e l'anno forniti, altrimenti 0
+
+/*
+ * Funzione: giorno_valido
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    giorno mese e anno interi.
+ *
+ * Precondizioni:
+ *    Nessuna.
+ *
+ * Postcondizioni:
+ *    Restituisce 1 se la combinazione giorno/mese/anno rappresenta una data valida,
+ *     altrimenti 0.
+ *
+ */
+
 int giorno_valido(int giorno, int mese, int anno) {
     // Giorni standard per ogni mese (indice 0 = gennaio, 1 = febbraio, ..., 11 = dicembre)
     int giorni_per_mese[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -15,7 +31,6 @@ int giorno_valido(int giorno, int mese, int anno) {
     // Verifica se l'anno è bisestile
     int bisestile = (anno % 4 == 0 && anno % 100 != 0) || (anno % 400 == 0);
 
-    // Se febbraio e anno bisestile, imposta 29 giorni
     if (mese == 2 && bisestile) {
         giorni_per_mese[1] = 29;
     }
@@ -33,16 +48,27 @@ int giorno_valido(int giorno, int mese, int anno) {
     }
 }
 
-// Verifica se tutti i dati relativi a un'attività sono validi
+/*
+ * Funzione: dati_validi
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    giorno, mese, anno ore, tempo_stimato interi
+ *
+ * Precondizioni:
+ *    La combinazione giorno mese e anno deve essere valida
+ *
+ * Postcondizioni:
+ *    Restituisce 1 se tutti i dati sono validi, altrimenti 0
+ *
+ */
+
 int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int priorita) {
     // Controlla se il giorno è valido per il mese e l'anno (
     if (!giorno_valido(giorno, mese, anno)) {
         return 0;
     }
 
-    if (mese < 1 || mese > 12) {
-        return 0;
-    }
     if (anno < 2025 || anno > 2030) {
         return 0;
     }
@@ -55,7 +81,7 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
     if (priorita < 0 || priorita > 2) {
         return 0;
     }
-	// Aggiungi alla fine della funzione dati_validi
+
 	data_ora attivita_data = crea_data_ora(giorno, mese, anno, ore, 0, 0);
 	data_ora ora_corrente = ottieni_data_ora();
 
@@ -72,15 +98,34 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
 
 	libera_data_ora(attivita_data);
 	libera_data_ora(ora_corrente);
-    // Se tutte le condizioni sono valide
+
     return 1;
 }
 
+/*
+ * Funzione: inserisci_attivita_da_input
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    ultimo_id puntatore ad una variabile intera
+ *
+ * Precondizioni:
+ *    ultimo_id deve puntare ad una variabile
+ *
+ * Postcondizioni:
+ *    Se tutti i dati sono validi,
+ *    restituisce una nuova attività, altrimenti restiuisce NULLATTIVITA
+ *
+ * Effetti collaterali:
+ *    Stampa su stdout messaggi e permette all'utente di inserire.
+ *     Inolte se tutti i dati sono validi incremente il valore della variabile puntata da ultimo_id
+ *
+ */
 
 attivita inserisci_attivita_da_input(int *ultimo_id) {
 	if(ultimo_id==NULL){
 		printf("Attenzione ultimo_id non punta ad una variabile");
-		return NULL;
+		return NULLATTIVITA;
 	}
 
     char descrizione[MAX], corso[MAX];
@@ -108,7 +153,7 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
         return NULLATTIVITA;
     }
 
-    printf("Inserisci anno di scadenza (2024-2030): ");
+    printf("Inserisci anno di scadenza (2025-2030): ");
     if (fgets(buffer, sizeof(buffer), stdin) == NULL || sscanf(buffer, "%d", &anno) != 1) {
         printf("Input non valido per l'anno.\n");
         return NULLATTIVITA;
@@ -143,6 +188,28 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
     *ultimo_id = id + 1;
     return a;
 }
+
+/*
+ * Funzione: carica_attivita_da_file
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    ultimo_id puntatore ad una variabile intera
+ *    nome_file puntatore ad una stringa
+ *
+ * Precondizioni:
+ *    ultimo_id deve puntare ad una variabile
+ *    nome_file deve puntare ad un array di caratteri
+ *
+ * Postcondizioni:
+ *    Se almeno un attivita è valida all'interno del file,
+ *    restituisce una lista, altrimenti restiuisce NULL
+ *
+ * Effetti collaterali:
+ *    Stampa su stdout eventuali messaggi di errore
+ *     Al valore della variabile a cui punta ultimo_id viene assegnato l’id successivo da utilizzare
+ *
+ */
 
 lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
     if (ultimo_id == NULL) {
@@ -198,9 +265,28 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
     return l;
 }
 
+/*
+ * Funzione: controlla_ritardo
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *
+ * Precondizioni:
+ *    a non deve essere nulla
+ *
+ * Postcondizioni:
+ *    Non restituisce niente
+*
+ * Effetti collaterali:
+ *    Se la scadenza dell'attivita è superata imposta lo stato a 3
+ */
+
 // Verifica se l'attività è in ritardo, se lo è cambia lo stato
 void controlla_ritardo(attivita a) {
-
+    if(a==NULLATTIVITA) {
+      return;
+    }
     data_ora data_corrente = ottieni_data_ora();
     data_ora scadenza = rit_scadenza(a);
     int confronto = confronta_data_ora(data_corrente, scadenza);
@@ -210,9 +296,36 @@ void controlla_ritardo(attivita a) {
         imposta_stato(a,3);
     }
 }
-//Calcola il progresso di un attivita, ritorna la percentuale
+
+/*
+ * Funzione: calcolo_progresso
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *    trascorso di tipo data_ora
+ *
+ * Precondizioni:
+ *    a non deve essere nulla
+ *    trascorso non deve essere nullo
+ *
+ * Postcondizioni:
+ *    Non restituisce niente
+ *
+ * Effetti collaterali:
+ *    Stampa su stdout eventuali messaggi di errore
+ *    Se va a buon fine stampa i dati di a e una barra
+ *     che rappresenta il progresso di a
+ *
+ */
+
 void calcolo_progresso(attivita a, data_ora trascorso){
 	int stimato = rit_tempo_stimato(a);
+
+    if (a == NULLATTIVITA) {
+      printf("Attivita non trovata\n");
+      return;
+    }
 
     if (trascorso == NULL) {
     	printf("Errore: tempo trascorso non calcolabile\n");
@@ -257,7 +370,28 @@ void calcolo_progresso(attivita a, data_ora trascorso){
 	//return percentuale;
 }
 
+/*
+ * Funzione: mostra_progresso
+ * ---------------------------------------
+ *
+ * Parametri:
+ *     l di tipolista
+ *
+ * Precondizioni:
+ *    la lista l non deve essere vuota
+ *
+ * Postcondizioni:
+ *    Non restituisce niente
+*
+ * Effetti collaterali
+ *     Stamap su stdout il progresso di tutte le attivita presenti in l
+ *
+ */
+
 void mostra_progresso(lista l) {
+    if(lista_vuota(l)) {
+      return;
+    }
     const char* intestazioni[] = {
         "\nAttività NON INIZIATE:",
         "\nAttività IN CORSO:",
@@ -309,11 +443,36 @@ void mostra_progresso(lista l) {
     }
 }
 
+/*
+ * Funzione: aggiorna_stato
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *    scelta di tipo intero
+ *
+ * Precondizioni:
+ *    a non deve essere nulla
+ *    scelta deve essere 1 o 2
+ *
+ * Postcondizioni:
+ *    Restituisce 0 se l'aggiornamento è riuscito
+ *        1 se scelta non è valido
+ *        2 se l'attivita è completata in ritardo o non è valida
+ *
+ * Effetti collaterali
+ *     	Modifica lo stato di a, da 0(non iniziata) a 1(in corso)
+ *         o da 1 a 2(completata)
+ *     Nel primo caso imposta tempo_inizio di a alla data_ora corrente
+ *
+ */
 
-//Funzione che riceve come argomento una struttura di tipo attivita e un intero che deve essere 1 o 2
-//Se l'attività è completata o la scelta non è valida restituisce 1, se è in ritardo restituisce 2, altrimenti restituisce 0
+
 int aggiorna_stato(attivita a, int scelta) {
-	// Verifica se l'attività è in ritardo prima di tutto
+	if(a==NULLATTIVITA) {
+        printf("Attivita non valida\n");
+	    return 2;
+	}
     controlla_ritardo(a);
 
     // Verifica se l'attività è già completata
@@ -342,7 +501,26 @@ int aggiorna_stato(attivita a, int scelta) {
     return 0;
 }
 
+/*
+ * Funzione: genera_report_settimanale
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    l di tipo lista
+ *
+ * Precondizioni:
+ *    Nessuna
+ *
+ * Postcondizioni:
+ *    Non restituisce niente
+ *
+ * Effetti collaterali
+ *     Stampa le attivita classificate in base alla settimana di scadenza
+ *
+ */
+
 void genera_report_settimanale(lista l) {
+
     data_ora oggi = ottieni_data_ora();
     int settimana_corrente = numero_settimana(oggi);
     int anno_corrente = rit_anno(oggi);
@@ -396,7 +574,28 @@ void genera_report_settimanale(lista l) {
     printf("\n========================================\n");
 }
 
+/*
+ * Funzione: chiedi_attivita_per_id
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    l di tipo lista
+ *
+ * Precondizioni:
+ *    l non deve essere vuota
+ *
+ * Postcondizioni:
+ *    Restituisce l'attivita con l'id inserito dall'utente
+ *
+ * Effetti collaterali
+ *     Stampa messaggi su stdout e chiede all’utente di inserire
+ *
+ */
+
 attivita chiedi_attivita_per_id(lista l) {
+    if(lista_vuota(l)) {
+       return NULLATTIVITA;
+    }
 	stampa_lista(l);
     int id;
     attivita a;
@@ -413,6 +612,25 @@ attivita chiedi_attivita_per_id(lista l) {
         }
     }
 }
+
+/*
+ * Funzione: menu
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    ultimo_id puntatore a intero
+ *
+ * Precondizioni:
+ *    ultimo_id deve puntare a una variabile
+ *
+ * Postcondizioni:
+ *    Non restituisce niente
+ *
+ * Effetti collaterali
+ *     Stampa il menu del programma in cui l’utente può scegliere cosa fare,
+ *     finché non sceglie 0 che equivale alla chiusura del programma.
+ *
+ */
 
 void menu(lista l, int *ultimo_id) {
 	if(ultimo_id==NULL){

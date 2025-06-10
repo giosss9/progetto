@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "data.h"
+#include "utile.h"
 
 struct data_ora {
     int giorno;
@@ -12,12 +13,52 @@ struct data_ora {
     int secondi;
 };
 
-// Crea e restituisce una nuova struttura data_ora
+/*
+ * Funzione: crea_data_ora
+ * ---------------------------------------
+ *
+ * Parametri:
+ *  Tutti interi
+ *    giorno mese anno ore minuti secondi
+ *
+ * Precondizioni:
+ *	    giorno ∈ [1, 31] (a seconda del mese e dell'anno)
+ *	    mese ∈ [1, 12]
+ *	    anno > 0
+ *	    ore ∈ [0, 23]
+ *	    minuti ∈ [0, 59]
+ *	    secondi ∈ [0, 59]
+ *
+ * Postcondizioni:
+ *	    Ritorna una struttura data_ora inizializzata con i parametri forniti
+ *	    Se l’allocazione o il controllo per i dati fallisce, ritorna NULL.
+ *
+ */
+
 data_ora crea_data_ora(int giorno, int mese, int anno, int ore, int minuti, int secondi) {
+    //Controllo dati
+  	if(!giorno_valido(giorno, mese, anno) == 1) {
+      	printf("Errore validazione campi\n");
+      	return NULL;
+  	}
+    if (anno < 2025 || anno > 2030) {
+        return NULL;
+    }
+    if (ore < 0 || ore > 23) {
+        return NULL;
+    }
+    if (minuti < 0 || minuti > 59) {
+        return NULL;
+    }
+    if (secondi < 0 || secondi > 59) {
+      return NULL;
+    }
+
+
     data_ora nuova = malloc(sizeof(struct data_ora));
     if (nuova == NULL) {
-        fprintf(stderr, "Errore allocazione memoria data_ora\n");
-        exit(EXIT_FAILURE);
+        printf("Errore allocazione memoria data_ora\n");
+        return NULL;
     }
 
     nuova->giorno = giorno;
@@ -30,15 +71,30 @@ data_ora crea_data_ora(int giorno, int mese, int anno, int ore, int minuti, int 
     return nuova;
 }
 
-// Ottiene data e ora correnti
+/*
+ * Funzione: ottieni_data_ora
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    Nessuno
+ *
+ * Precondizioni:
+ *    Nessuna
+ *
+ * Postcondizioni:
+ *     Viene restituita una struttura data_ora contenente data e ora corrente del sistema.
+ *     Se l’allocazione di memoria fallisce, ritorna NULL.
+ *
+ */
+
 data_ora ottieni_data_ora() {
     time_t tempo_grezzo = time(NULL);
     struct tm *tempo_locale = localtime(&tempo_grezzo);
 
     data_ora data_corrente = malloc(sizeof(struct data_ora));
     if (data_corrente == NULL) {
-        fprintf(stderr, "Errore nell'allocazione della memoria\n");
-        exit(EXIT_FAILURE);
+        printf("Errore nell'allocazione della memoria\n");
+        return NULL;
     }
 
     data_corrente->giorno = tempo_locale->tm_mday;
@@ -51,10 +107,43 @@ data_ora ottieni_data_ora() {
     return data_corrente;
 }
 
-// Calcola il tempo trascorso tra la data passata e quella attuale (giorni minuti e ore)
+/*
+ * Funzione: calcolo_tempo_trascorso
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    inizio che è un tipo data_ora
+ *
+ * Precondizioni:
+ *    inizio è un puntatore valido ad una struttura data_ora
+ *    correttamente inizializzata.
+ *
+ * Postcondizioni:
+ *     Retituisce una nuova data_ora che rappresenta
+ *     il tempo trascorso tra la data inizio e quella corrente.
+ *
+ */
+
 data_ora calcolo_tempo_trascorso(data_ora inizio) {
     if (inizio == NULL) {
-        fprintf(stderr, "Errore: data di inizio NULL\n");
+        printf("Errore: data di inizio NULL\n");
+        return NULL;
+    }
+
+    //Controllo campi
+	int giorno=rit_giorno(inizio);
+	int mese=rit_mese(inizio);
+	int anno=rit_anno(inizio);
+	int ore=rit_ore(inizio);
+
+    if(!giorno_valido(giorno, mese, anno)) {
+        printf("Errore validazione campi\n");
+        return NULL;
+    }
+    if (anno < 2025 || anno > 2030) {
+        return NULL;
+    }
+    if (ore < 0 || ore > 23) {
         return NULL;
     }
 
@@ -127,15 +216,29 @@ data_ora calcolo_tempo_trascorso(data_ora inizio) {
     return risultato;
 }
 
-// Confronta due date
-//-1 → la prima data (a) è prima della seconda (b)
-//0 → le due date sono uguali
-//1 → la prima data (a) è dopo la seconda (b)
-// 2 se
+/*
+ * Funzione: confronta_data_ora
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a primo tipo data_ora
+ *    b secondo tipo data_ora
+ *
+ * Precondizioni:
+ *    a e b devono essere due puntatori validi a strutture data_ora
+ *
+ * Postcondizioni:
+ *     Restituisce:
+ *         -1 se a è antecedente a b
+ *          0 se sono uguali
+ * 	        1 se a è successiva a b
+ *          2 se a e b non sono validi
+ */
+
 int confronta_data_ora(data_ora a, data_ora b) {
   	if (a == NULL || b == NULL) {
-        fprintf(stderr, "Errore: data_ora non valida (NULL)\n");
-        exit(EXIT_FAILURE);
+        printf("Errore: data_ora non valida (NULL)\n");
+        return 2;
     }
     int risultato = 0;
 
@@ -155,11 +258,24 @@ int confronta_data_ora(data_ora a, data_ora b) {
     return risultato;
 }
 
+/*
+ * Funzione: numero_settimana
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d tipo data_ora
+ *
+ * Precondizioni:
+ *    d è un puntatore valido ad una struttura data_ora
+ *
+ * Postcondizioni:
+ *    Restituisce il numero della settimana dell'anno
+ *
+ */
 
-// Restituisce il numero della settimana dell'anno
 int numero_settimana(data_ora d) {
     if (d == NULL) return -1;
-
+    int rit;
     struct tm tm_date = {
         .tm_year = d->anno - 1900,
         .tm_mon  = d->mese - 1,
@@ -173,9 +289,24 @@ int numero_settimana(data_ora d) {
 
     char buffer[3];
     strftime(buffer, sizeof(buffer), "%W", &tm_date); // %W: settimana (lunedì come inizio)
-    return atoi(buffer);
+    rit=atoi(buffer);
+    return rit;
 }
 
+/*
+ * Funzione: rit_campo (giorno mese anno ore minuti secondi)
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d è un tipo data_ora
+ *
+ * Precondizioni:
+ *    d è un puntatore valido ad una struttura data_ora
+ *
+ * Postcondizioni:
+ *    Restituisce il campo della struttura d, se non è nulla.
+ *
+ */
 
 int rit_giorno(data_ora d) {
     int giorno = (d != NULL) ? d->giorno : -1;
@@ -208,19 +339,77 @@ int rit_secondi(data_ora d) {
 
 }
 
+/*
+ * Funzione: imposta_ore
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d è un tipo data_ora
+ *    ore tipo intero
+ *
+ * Precondizioni:
+ *    d è un puntatore valido ad una struttura data_ora
+ *    ore deve essere compreso tra 0 e 23
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *    Cambia il campo ore della struttura d
+ *
+ */
+
 void imposta_ore(data_ora d, int ore){
-	if(ore<0)
+	if(ore<0||ore>23)
 		return;
 
 	d->ore=ore;
 }
 
+/*
+ * Funzione: imposta_giorno
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d è un tipo data_ora
+ *    giorno tipo intero
+ *
+ * Precondizioni:
+ *    d è un puntatore valido ad una struttura data_ora
+ *    giorno deve essere valido a seconda del mese e dell'anno
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *    Cambia il campo giorno della struttura d
+ *
+ */
+
 void imposta_giorno(data_ora d, int giorno){
-	if(giorno<0)
+    if(!giorno_valido(giorno, rit_mese(d), rit_anno(d)))
 		return;
 
 	d->giorno=giorno;
 }
+
+/*
+ * Funzione: libera_data_ora
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d tipo data_ora
+ *
+ * Precondizioni:
+ *    d è un puntatore valido a una struttura data_ora.
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *    Libera il puntatore d dalla struttura assegnatagli
+ *
+ */
 
 void libera_data_ora(data_ora d) {
     if (d != NULL) {

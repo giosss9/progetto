@@ -7,6 +7,32 @@
 #include "utile.h"
 
 #define MAX 100
+/*
+ *	La struttura  rappresenta un’attività di studio che ha questi campi:
+ *	    Id:
+ *	        Un intero che va da 0 a n, dove n è il numero di attività inserite
+ *	    Descrizione e corso
+ *	        Due stringhe di lunghezza MAX(100), una rappresenta una breve descrizione dell’attività, l’altra il nome del corso
+ *	    Scadenza:
+ *	        Rappresenta la data e ora entro cui l’attività deve essere completata, è di tipo data_ora
+ *	    Tempo_Stimato:
+ *	        Rappresenta il tempo stimato per completare l’attività espresso in ore, dev’essere un valore positivo
+ *	    Priorita:
+ *	        Rappresenta il livello di priorità assegnato all’attività
+ *	        Valori ammessi:
+ *	            0 = bassa
+ *	            1 = media
+ *	            2 = alta
+ *	    Stato:
+ *	        Rappresenta lo stato attuale dell’attività
+ *	        Valori ammessi:
+ *	            0 = non iniziata (di default appena viene inserita un’attività)
+ *	            1 = in corso
+ *	            2 = completata
+ *	            3 = in ritardo (se supera la data di scadenza)
+ *	    Tempo_inizio
+ *	        Rappresenta il momento in cui l’attività passa da non iniziata a in corso
+ */
 
 struct attivita_studio {
 	int id;
@@ -18,6 +44,40 @@ struct attivita_studio {
     int stato;
     data_ora tempo_inizio;
 };
+
+/*
+ * Funzione: crea_attivita
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    d stringa che equivale alla descrizione
+ *    c stringa che equivale al nome del corso
+ *     g intero equivale al giorno della scadenza
+ *     m intero equivale al mese della scadenza
+ *     a intero equivale all anno della scadenza
+ *     tempo intero equivale al tempo stimato per il completamento di un attivita
+ *     pr intero equivale alla priorita di un' attivita
+ *     ore intero equivale alle ore della data di scadenza
+ *     id intero che rappresenta univocamente un'attivita
+ *
+ * Precondizioni:
+ *      d e c
+ *	      Devono puntare ad una stringa
+ *	    tempo >0
+ *	    0<=pr<=2
+ *	    g dipende dal mese e dall anno
+ *      1<=m<=12
+ *      2025<=a<=2030
+ *
+ * Postcondizioni:
+ *     Se tuttti i parametri sono validi e la memoria è stata allocata correttamente,
+ *     restituisce una struttura di tipo attivita inizializzata con i parametri forniti,
+ *     altrimenti restituisce NULLATTIVITA
+ *
+ * Effetti collaterali:
+ *     Stampa su stdout eventuali messaggi di errore
+ *
+ */
 
 attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore, int id){
 	if (d == NULL || c == NULL) {
@@ -55,6 +115,24 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
     return nuova;
 }
 
+/*
+ * Funzione: stampa_attivita
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *
+ * Precondizioni:
+ *    a deve puntare ad una struttura attivita
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *     Stampa su stdout i campi di a
+ *
+ */
+
 void stampa_attivita(attivita a) {
     if (a == NULLATTIVITA) {
         printf("Attività non valida (NULL)\n");
@@ -85,6 +163,23 @@ void stampa_attivita(attivita a) {
     }
     printf("----------------------------------------\n");
 }
+
+/*
+ * Funzione: rit_campo (descrizione corso scadenza priorita stato id tempo_inizio)
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *
+ * Precondizioni:
+ *    a deve puntare ad una struttura valida
+ *
+ * Postcondizioni:
+ *    Ritorna il campo corrispondente della struttura a il tipo dipende dal campo
+ *     puo essere char*, data_ora e intero
+ *     Ritorna NULLATTIVITA se a non punta ad una struttura attivita
+ *
+ */
 
 char* rit_descrizione(attivita a) {
     if (a == NULLATTIVITA) return NULL;
@@ -126,6 +221,26 @@ data_ora rit_tempo_inizio(attivita a) {
     return a->tempo_inizio;
 }
 
+/*
+ * Funzione: imposta_stato
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivia
+ *    stato di tipo intero
+ *
+ * Precondizioni:
+ *    a deve puntare ad una struttura valida
+ *    stato deve essere compreso tra 0 e 3
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *     Cambia il campo stato di a se è valido tutto
+ *
+ */
+
 void imposta_stato(attivita a, int stato) {
 	if (a == NULLATTIVITA) return;
     if (stato < 0 || stato > 3) {
@@ -134,6 +249,26 @@ void imposta_stato(attivita a, int stato) {
     }
     a->stato = stato;
 }
+
+/*
+ * Funzione: imposta_tempo_inizio
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tip attivita
+ *
+ * Precondizioni:
+ *    a deve puntare ad una struttura attivita valida
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *    Assegna il tempo corrente al campo tempo_inizio di a.
+ *     Se esiste una struttura data_ora gia inizializzata,
+ *     nel campo tempo_inizio, la sovrascrive.
+ *
+ */
 
 void imposta_tempo_inizio(attivita a) {
     if (a == NULLATTIVITA){
@@ -147,6 +282,25 @@ void imposta_tempo_inizio(attivita a) {
 
     a->tempo_inizio = ottieni_data_ora();
 }
+
+/*
+ * Funzione: libera_attivita
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    a di tipo attivita
+ *
+ * Precondizioni:
+ *    a deve puntare ad una struttura attivita
+ *
+ * Postcondizioni:
+ *    Non ritorna niente
+ *
+ * Effetti collaterali:
+ *     Se i campi data_ora all'interno di a sono inizializzati li libera prima,
+ *     successivamente libera il puntatore a alla struttura
+ *
+ */
 
 void libera_attivita(attivita a) {
     if (a == NULLATTIVITA) return;

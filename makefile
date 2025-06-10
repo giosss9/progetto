@@ -1,5 +1,5 @@
-main_testing.out: main_testing.o attivita.o lista.o data.o utile.o
-	gcc main_testing.o attivita.o lista.o data.o utile.o -o main_testing.out
+main.out: main.o attivita.o lista.o data.o utile.o
+	gcc main.o attivita.o lista.o data.o utile.o -o main.out
 
 attivita.o: attivita.c attivita.h data.h utile.h
 	gcc -c attivita.c
@@ -13,11 +13,11 @@ data.o: data.c data.h
 utile.o: utile.c utile.h attivita.h lista.h data.h
 	gcc -c utile.c
 
-main_testing.o: main_testing.c attivita.h lista.h data.h utile.h
-	gcc -c main_testing.c -std=c99
+main.o: main.c attivita.h lista.h data.h utile.h
+	gcc -c main.c -std=c99
 
-run: main_testing.out
-	./main_testing.out test_suite.txt risultati.txt
+run: main.out
+	./main.out input.txt
 
 clean:
-	rm -f *.o main_testing.out
+	rm -f *.o main.out
