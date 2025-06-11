@@ -1,3 +1,5 @@
+//Interfaccia del modulo: file data.h
+
 #ifndef DATA_H
 #define DATA_H
 

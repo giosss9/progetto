@@ -1,3 +1,5 @@
+//Interfaccia del modulo: file attivita.h
+
 #ifndef ATTIVITA_H
 #define ATTIVITA_H
 

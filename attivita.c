@@ -1,3 +1,5 @@
+//Implementazione del modulo: file attivita.c
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -47,38 +49,13 @@ struct attivita_studio {
 
 /*
  * Funzione: crea_attivita
- * ---------------------------------------
+ * -----------------------
+ * Alloca e inizializza dinamicamente una struttura "attivita" con i parametri forniti.
+ * Effettua controlli su input e crea la data di scadenza.
  *
- * Parametri:
- *    d stringa che equivale alla descrizione
- *    c stringa che equivale al nome del corso
- *     g intero equivale al giorno della scadenza
- *     m intero equivale al mese della scadenza
- *     a intero equivale all anno della scadenza
- *     tempo intero equivale al tempo stimato per il completamento di un attivita
- *     pr intero equivale alla priorita di un' attivita
- *     ore intero equivale alle ore della data di scadenza
- *     id intero che rappresenta univocamente un'attivita
- *
- * Precondizioni:
- *      d e c
- *	      Devono puntare ad una stringa
- *	    tempo >0
- *	    0<=pr<=2
- *	    g dipende dal mese e dall anno
- *      1<=m<=12
- *      2025<=a<=2030
- *
- * Postcondizioni:
- *     Se tuttti i parametri sono validi e la memoria è stata allocata correttamente,
- *     restituisce una struttura di tipo attivita inizializzata con i parametri forniti,
- *     altrimenti restituisce NULLATTIVITA
- *
- * Effetti collaterali:
- *     Stampa su stdout eventuali messaggi di errore
- *
+ * Nota: Se la data non è valida o la memoria non viene allocata correttamente,
+ *       la funzione restituisce NULLATTIVITA e stampa un messaggio di errore.
  */
-
 attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr, int ore, int id){
 	if (d == NULL || c == NULL) {
     	printf("Errore: descrizione o corso null\n");
@@ -109,7 +86,7 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
 
     nuova->tempo_stimato = tempo;
     nuova->priorita = pr;
-    nuova->stato = 0;
+    nuova->stato = 0; 				// Stato iniziale: non iniziata
 	nuova->id = id;
     nuova->tempo_inizio = NULL;
     return nuova;
@@ -117,22 +94,10 @@ attivita crea_attivita(char *d, char *c, int g, int m, int a, int tempo, int pr,
 
 /*
  * Funzione: stampa_attivita
- * ---------------------------------------
- *
- * Parametri:
- *    a di tipo attivita
- *
- * Precondizioni:
- *    a deve puntare ad una struttura attivita
- *
- * Postcondizioni:
- *    Non ritorna niente
- *
- * Effetti collaterali:
- *     Stampa su stdout i campi di a
- *
+ * -------------------------
+ * Stampa a video tutti i campi rilevanti dell’attività.
+ * Rende leggibile lo stato e la priorità con etichette testuali.
  */
-
 void stampa_attivita(attivita a) {
     if (a == NULLATTIVITA) {
         printf("Attività non valida (NULL)\n");
@@ -165,22 +130,12 @@ void stampa_attivita(attivita a) {
 }
 
 /*
- * Funzione: rit_campo (descrizione corso scadenza priorita stato id tempo_inizio)
- * ---------------------------------------
- *
- * Parametri:
- *    a di tipo attivita
- *
- * Precondizioni:
- *    a deve puntare ad una struttura valida
- *
- * Postcondizioni:
- *    Ritorna il campo corrispondente della struttura a il tipo dipende dal campo
- *     puo essere char*, data_ora e intero
- *     Ritorna NULLATTIVITA se a non punta ad una struttura attivita
- *
+ * Funzioni di ritorno: rit_* (descrizione, corso, scadenza, tempo_stimato,
+ *								priorita, stato, id, tempo_inizio)
+ * --------------------------------------------------
+ * Restituiscono i singoli campi della struttura.
+ * In caso di puntatore NULL, restituiscono NULL o -1.
  */
-
 char* rit_descrizione(attivita a) {
     if (a == NULLATTIVITA) return NULL;
     return a->descrizione;
@@ -223,24 +178,11 @@ data_ora rit_tempo_inizio(attivita a) {
 
 /*
  * Funzione: imposta_stato
- * ---------------------------------------
- *
- * Parametri:
- *    a di tipo attivia
- *    stato di tipo intero
- *
- * Precondizioni:
- *    a deve puntare ad una struttura valida
- *    stato deve essere compreso tra 0 e 3
- *
- * Postcondizioni:
- *    Non ritorna niente
- *
- * Effetti collaterali:
- *     Cambia il campo stato di a se è valido tutto
+ * -----------------------
+ * Imposta il campo "stato" con un valore tra 0 e 3.
+ * Se lo stato è fuori range, stampa un errore e non effettua modifiche.
  *
  */
-
 void imposta_stato(attivita a, int stato) {
 	if (a == NULLATTIVITA) return;
     if (stato < 0 || stato > 3) {
@@ -252,56 +194,30 @@ void imposta_stato(attivita a, int stato) {
 
 /*
  * Funzione: imposta_tempo_inizio
- * ---------------------------------------
- *
- * Parametri:
- *    a di tip attivita
- *
- * Precondizioni:
- *    a deve puntare ad una struttura attivita valida
- *
- * Postcondizioni:
- *    Non ritorna niente
- *
- * Effetti collaterali:
- *    Assegna il tempo corrente al campo tempo_inizio di a.
- *     Se esiste una struttura data_ora gia inizializzata,
- *     nel campo tempo_inizio, la sovrascrive.
- *
+ * ------------------------------
+ * Imposta il tempo di inizio dell’attività con l’orario corrente.
+ * Libera un eventuale valore precedente per evitare perdite di memoria.
  */
-
 void imposta_tempo_inizio(attivita a) {
     if (a == NULLATTIVITA){
 		printf("Stato non aggiornato");
 	 	return;
 	}
     if (a->tempo_inizio != NULL) {
-        free(a->tempo_inizio);
+        free(a->tempo_inizio); // importante: libera la data precedente
         a->tempo_inizio = NULL;
     }
 
-    a->tempo_inizio = ottieni_data_ora();
+    a->tempo_inizio = ottieni_data_ora(); // crea nuova data corrente
 }
 
 /*
  * Funzione: libera_attivita
- * ---------------------------------------
+ * -------------------------
+ * Libera memoria della struttura attività, inclusi i campi dinamici scadenza e tempo_inizio.
  *
- * Parametri:
- *    a di tipo attivita
- *
- * Precondizioni:
- *    a deve puntare ad una struttura attivita
- *
- * Postcondizioni:
- *    Non ritorna niente
- *
- * Effetti collaterali:
- *     Se i campi data_ora all'interno di a sono inizializzati li libera prima,
- *     successivamente libera il puntatore a alla struttura
- *
+ * Ordine corretto: prima si rilasciano i campi dinamici, poi la struttura principale.
  */
-
 void libera_attivita(attivita a) {
     if (a == NULLATTIVITA) return;
 

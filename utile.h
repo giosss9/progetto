@@ -1,3 +1,5 @@
+//Interfaccia del modulo: file utile.h
+
 #ifndef UTILE_H
 #define UTILE_H
 

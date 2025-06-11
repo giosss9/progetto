@@ -1,3 +1,5 @@
+//Implementazione del modulo: file utile.c
+
 #include <stdio.h>
 #include <string.h>
 #include "lista.h"
@@ -389,9 +391,10 @@ void calcolo_progresso(attivita a, data_ora trascorso){
  */
 
 void mostra_progresso(lista l) {
-    if(lista_vuota(l)) {
-      return;
-    }
+    if(lista_vuota(l)){
+		printf("La lista delle attività è vuota");
+		return;
+	}
     const char* intestazioni[] = {
         "\nAttività NON INIZIATE:",
         "\nAttività IN CORSO:",
@@ -660,6 +663,10 @@ void menu(lista l, int *ultimo_id) {
                 mostra_progresso(l);
                 break;
             case 3:
+				if(lista_vuota(l)){
+					printf("La lista delle attività è vuota");
+					break;
+				}
 				int nuovo, rit;
 				attivita a;
 				int v = 1;
@@ -689,6 +696,10 @@ void menu(lista l, int *ultimo_id) {
                 }
 				break;
 			case 5:
+				if(lista_vuota(l)){
+					printf("La lista delle attività è vuota");
+					break;
+				}
 				printf("Quale attivita desideri rimuovere?\n");
 				attivita a_da_rimuovere;
 				a_da_rimuovere = chiedi_attivita_per_id(l);

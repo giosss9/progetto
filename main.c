@@ -1,3 +1,5 @@
+//File main.c
+
 #include <stdio.h>
 #include <string.h>
 #include "lista.h"
@@ -14,7 +16,7 @@ int main(int argc, char *argv[]) {
  	if (argc == 2) {
     	char risposta;
     	do {
-        	printf("Hai specificato il file '%s'. Vuoi caricare le attività da questo file? (s/n): ", argv[1]);
+        	printf("È presente il file '%s'. Vuoi caricare le attività da questo file? (s/n): ", argv[1]);
         	risposta = getchar();
         	while (getchar() != '\n');
     	} while (risposta != 's' && risposta != 'S' && risposta != 'n' && risposta != 'N');
