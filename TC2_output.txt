@@ -1,4 +1,0 @@
-Errore nei dati inseriti nella riga 4. Attivita non inserita.
-Errore nei dati inseriti nella riga 7. Attivita non inserita.
-Errore nei dati inseriti nella riga 10. Attivita non inserita.
-0

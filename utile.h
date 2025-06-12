@@ -88,7 +88,7 @@ void calcolo_progresso(attivita a, data_ora trascorso);
  * Postcondizioni:
  *    Restituisce 0 se l'aggiornamento è riuscito
  *        1 se scelta non è valido
- *        2 se l'attivita è completata in ritardo o non è valida
+ *        2 se l'attivita è completata in ritardo, non è valida o è già in corso
  *
  * Effetti collaterali
  *     	Modifica lo stato di a, da 0(non iniziata) a 1(in corso)

@@ -1,7 +1,0 @@
-Riga 4: formato riga non valido: Informatica;20;06;2025;10;12;1
-Riga 7: formato riga non valido: Fare esercizi;Matematica;22;06;2025;10;2;
-Riga 10: formato riga non valido: Ripassare derivate;Matematica;06;2025;9;4;2
-Riga 15: formato riga non valido: Preparare presentazione-Storia-24-06-2025-16-6-1
-Riga 18: formato riga non valido: Preparare presentazione Storia 24 06 2025 16 6 1
-Riga 21: formato riga non valido: Preparare presentazione,Storia,24,06,2025,16,6,1
-0

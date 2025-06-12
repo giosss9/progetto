@@ -12,18 +12,20 @@
 
 /*
  * Funzione: giorno_valido
- * ---------------------------------------
+ * -----------------------
+ * Verifica se una combinazione di giorno, mese e anno rappresenta una data valida
+ * secondo il calendario gregoriano.
+ *
+ * La funzione considera correttamente gli anni bisestili (ad esempio, il 29 febbraio è
+ * valido solo se l'anno è bisestile).
  *
  * Parametri:
- *    giorno mese e anno interi.
+ *   giorno - Giorno del mese (1-31)
+ *   mese   - Mese dell'anno (1-12)
+ *   anno   - Anno completo (es. 2025)
  *
- * Precondizioni:
- *    Nessuna.
- *
- * Postcondizioni:
- *    Restituisce 1 se la combinazione giorno/mese/anno rappresenta una data valida,
- *     altrimenti 0.
- *
+ * Ritorna:
+ *   1 se la data è valida, 0 altrimenti.
  */
 
 int giorno_valido(int giorno, int mese, int anno) {
@@ -52,17 +54,22 @@ int giorno_valido(int giorno, int mese, int anno) {
 
 /*
  * Funzione: dati_validi
- * ---------------------------------------
+ * -----------------------
+ * Verifica la validità complessiva dei dati forniti per la creazione di un'attività,
+ * controllando che giorno, mese, anno, ora, tempo stimato e priorità rispettino i limiti previsti.
+ *
+ * Inoltre, verifica che la data e l'ora specificate non siano nel passato rispetto all'orario corrente.
  *
  * Parametri:
- *    giorno, mese, anno ore, tempo_stimato interi
+ *   giorno         - Giorno del mese (1-31)
+ *   mese           - Mese dell'anno (1-12)
+ *   anno           - Anno (accettato tra 2025 e 2030)
+ *   ore            - Ora del giorno (0-23)
+ *   tempo_stimato  - Tempo stimato per completare l'attività (in ore, > 0)
+ *   priorita       - Livello di priorità (0 = bassa, 1 = media, 2 = alta)
  *
- * Precondizioni:
- *    La combinazione giorno mese e anno deve essere valida
- *
- * Postcondizioni:
- *    Restituisce 1 se tutti i dati sono validi, altrimenti 0
- *
+ * Ritorna:
+ *   1 se tutti i dati sono validi e coerenti, 0 altrimenti.
  */
 
 int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int priorita) {
@@ -106,22 +113,23 @@ int dati_validi(int giorno, int mese, int anno, int ore, int tempo_stimato, int 
 
 /*
  * Funzione: inserisci_attivita_da_input
- * ---------------------------------------
+ * -------------------------------------
+ * Richiede all'utente i dati necessari per creare una nuova attività,
+ * effettuando controlli di validità su tutti gli input ricevuti.
+ *
+ * I dati richiesti includono descrizione, corso, data e ora di scadenza,
+ * tempo stimato e priorità. In caso di input errati o dati non validi,
+ * la funzione annulla l'operazione e restituisce NULLATTIVITA.
  *
  * Parametri:
- *    ultimo_id puntatore ad una variabile intera
+ *   ultimo_id - Puntatore all'intero contenente l'ultimo ID usato.
+ *               Se valido, viene incrementato e assegnato alla nuova attività.
  *
- * Precondizioni:
- *    ultimo_id deve puntare ad una variabile
+ * Ritorna:
+ *   Una nuova struttura 'attivita' con i dati inseriti, oppure NULLATTIVITA in caso di errore.
  *
- * Postcondizioni:
- *    Se tutti i dati sono validi,
- *    restituisce una nuova attività, altrimenti restiuisce NULLATTIVITA
- *
- * Effetti collaterali:
- *    Stampa su stdout messaggi e permette all'utente di inserire.
- *     Inolte se tutti i dati sono validi incremente il valore della variabile puntata da ultimo_id
- *
+ * Nota:
+ *   L'input viene richiesto da tastiera tramite stdin.
  */
 
 attivita inserisci_attivita_da_input(int *ultimo_id) {
@@ -193,24 +201,27 @@ attivita inserisci_attivita_da_input(int *ultimo_id) {
 
 /*
  * Funzione: carica_attivita_da_file
- * ---------------------------------------
+ * --------------------------------
+ * Legge da file una lista di attività, creando una nuova lista contenente tutte
+ * le attività valide lette riga per riga. Ogni riga deve contenere i dati dell'attività
+ * separati da punto e virgola nel formato: descrizione;corso;giorno;mese;anno;ora;tempo_stimato;priorità.
+ *
+ * Vengono ignorate righe vuote o che iniziano con il carattere '#'.
+ * Per ogni riga, la funzione verifica la validità dei dati e, in caso di errore,
+ * segnala il problema e scarta l'attività.
  *
  * Parametri:
- *    ultimo_id puntatore ad una variabile intera
- *    nome_file puntatore ad una stringa
+ *   nome_file - Stringa contenente il nome del file da cui leggere le attività.
+ *   ultimo_id - Puntatore a un intero che conterrà l'ID da assegnare alla prossima attività.
+ *               Deve puntare a una variabile valida; in caso contrario la funzione restituisce NULL.
  *
- * Precondizioni:
- *    ultimo_id deve puntare ad una variabile
- *    nome_file deve puntare ad un array di caratteri
+ * Ritorna:
+ *   Una lista contenente tutte le attività lette e valide, oppure NULL in caso di errore
+ *   (file non aperto o parametro ultimo_id non valido).
  *
- * Postcondizioni:
- *    Se almeno un attivita è valida all'interno del file,
- *    restituisce una lista, altrimenti restiuisce NULL
- *
- * Effetti collaterali:
- *    Stampa su stdout eventuali messaggi di errore
- *     Al valore della variabile a cui punta ultimo_id viene assegnato l’id successivo da utilizzare
- *
+ * Nota:
+ *   L'ID delle attività viene assegnato progressivamente a partire da zero,
+ *   aggiornando il valore puntato da ultimo_id con l'ID successivo disponibile.
  */
 
 lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
@@ -269,22 +280,23 @@ lista carica_attivita_da_file(const char *nome_file, int *ultimo_id) {
 
 /*
  * Funzione: controlla_ritardo
- * ---------------------------------------
+ * ---------------------------
+ * Controlla se un'attività è in ritardo rispetto alla data e ora correnti.
+ *
+ * La funzione confronta la data e ora di scadenza dell'attività con quella corrente.
+ * Se la scadenza è passata e lo stato dell'attività non è già impostato a "in ritardo" (3),
+ * allora aggiorna lo stato dell'attività a 3 per indicare il ritardo.
  *
  * Parametri:
- *    a di tipo attivita
+ *   a - Struttura 'attivita' da controllare. Se NULLATTIVITA, la funzione termina senza operazioni.
  *
- * Precondizioni:
- *    a non deve essere nulla
+ * Ritorna:
+ *   Nulla (funzione void). Aggiorna internamente lo stato dell'attività se necessario.
  *
- * Postcondizioni:
- *    Non restituisce niente
-*
- * Effetti collaterali:
- *    Se la scadenza dell'attivita è superata imposta lo stato a 3
+ * Nota:
+ *   Utilizza funzioni di sistema per ottenere la data e ora correnti e per confrontare le date.
  */
 
-// Verifica se l'attività è in ritardo, se lo è cambia lo stato
 void controlla_ritardo(attivita a) {
     if(a==NULLATTIVITA) {
       return;
@@ -301,24 +313,25 @@ void controlla_ritardo(attivita a) {
 
 /*
  * Funzione: calcolo_progresso
- * ---------------------------------------
+ * ---------------------------
+ * Calcola e stampa il progresso di un'attività in base al tempo trascorso rispetto al tempo stimato.
+ *
+ * La funzione riceve un'attività e un intervallo di tempo trascorso, quindi:
+ * - Calcola la percentuale di tempo utilizzato rispetto al tempo stimato.
+ * - Stampa il tempo trascorso in minuti o ore.
+ * - Indica lo stato dell'attività ("IN CORSO" o "POSSIBILE RITARDO" se il tempo stimato è superato).
+ * - Mostra una barra di progresso visuale che rappresenta la percentuale completata.
  *
  * Parametri:
- *    a di tipo attivita
- *    trascorso di tipo data_ora
+ *   a        - Struttura 'attivita' da cui estrarre il tempo stimato. Se NULLATTIVITA, stampa errore e termina.
+ *   trascorso - Struttura 'data_ora' che rappresenta il tempo trascorso. Se NULL, stampa errore e termina.
  *
- * Precondizioni:
- *    a non deve essere nulla
- *    trascorso non deve essere nullo
+ * Ritorna:
+ *   Void. La funzione stampa direttamente i risultati su stdout.
  *
- * Postcondizioni:
- *    Non restituisce niente
- *
- * Effetti collaterali:
- *    Stampa su stdout eventuali messaggi di errore
- *    Se va a buon fine stampa i dati di a e una barra
- *     che rappresenta il progresso di a
- *
+ * Nota:
+ *   La percentuale massima è limitata al 100%.
+ *   La barra di progresso ha una lunghezza fissa di 20 caratteri.
  */
 
 void calcolo_progresso(attivita a, data_ora trascorso){
@@ -374,20 +387,24 @@ void calcolo_progresso(attivita a, data_ora trascorso){
 
 /*
  * Funzione: mostra_progresso
- * ---------------------------------------
+ * --------------------------
+ * Visualizza le attività suddivise per stato, stampando informazioni rilevanti
+ * per ciascuna categoria: non iniziate, in corso, completate e in ritardo.
+ *
+ * Per ogni attività:
+ * - Controlla se è in ritardo aggiornando lo stato se necessario.
+ * - Stampa la descrizione, il tempo stimato e altre informazioni specifiche in base allo stato.
+ * - Per le attività in corso, calcola e mostra il progresso basato sul tempo trascorso.
  *
  * Parametri:
- *     l di tipolista
+ *   l - Lista di attività da visualizzare. Se vuota, stampa un messaggio e termina.
  *
- * Precondizioni:
- *    la lista l non deve essere vuota
+ * Ritorna:
+ *   Void. La funzione stampa direttamente le informazioni su stdout.
  *
- * Postcondizioni:
- *    Non restituisce niente
-*
- * Effetti collaterali
- *     Stamap su stdout il progresso di tutte le attivita presenti in l
- *
+ * Nota:
+ *   Le attività sono raggruppate e visualizzate in ordine di stato (0-3).
+ *   Usa funzioni di supporto per ottenere informazioni e aggiornare lo stato.
  */
 
 void mostra_progresso(lista l) {
@@ -448,28 +465,33 @@ void mostra_progresso(lista l) {
 
 /*
  * Funzione: aggiorna_stato
- * ---------------------------------------
+ * ------------------------
+ * Aggiorna lo stato di un'attività in base alla scelta fornita, eseguendo
+ * controlli di validità e aggiornando anche lo stato in ritardo se necessario.
+ *
+ * La funzione verifica:
+ * - Se l'attività è valida (diversa da NULLATTIVITA).
+ * - Se l'attività non è già completata (stato 2).
+ * - Se la scelta è 1 (in corso) o 2 (completata), altrimenti segnala errore.
+ * - Se l'attività è già nello stato richiesto, stampa messaggio e non cambia nulla.
+ * - Se l'attività è in ritardo e si sceglie "in corso", avvisa l'utente.
+ *
+ * Se la scelta è "in corso" (1), imposta anche il tempo di inizio dell'attività.
+ * Aggiorna infine lo stato con la nuova scelta.
  *
  * Parametri:
- *    a di tipo attivita
- *    scelta di tipo intero
+ *   a      - Struttura 'attivita' da aggiornare.
+ *   scelta - Intero che indica il nuovo stato desiderato:
+ *            1 per "in corso", 2 per "completata".
  *
- * Precondizioni:
- *    a non deve essere nulla
- *    scelta deve essere 1 o 2
+ * Ritorna:
+ *   0 se l'aggiornamento è avvenuto con successo,
+ *   1 in caso di input non valido,
+ *   2 in caso di attività non valida o stato non modificabile.
  *
- * Postcondizioni:
- *    Restituisce 0 se l'aggiornamento è riuscito
- *        1 se scelta non è valido
- *        2 se l'attivita è completata in ritardo o non è valida
- *
- * Effetti collaterali
- *     	Modifica lo stato di a, da 0(non iniziata) a 1(in corso)
- *         o da 1 a 2(completata)
- *     Nel primo caso imposta tempo_inizio di a alla data_ora corrente
- *
+ * Nota:
+ *   La funzione stampa messaggi di errore o di conferma direttamente su stdout.
  */
-
 
 int aggiorna_stato(attivita a, int scelta) {
 	if(a==NULLATTIVITA) {
@@ -490,6 +512,11 @@ int aggiorna_stato(attivita a, int scelta) {
         return 1;
     }
 
+    if(rit_stato(a)==1 && scelta==1){
+        printf("Questa attività è già in corso");
+        return 2;
+    }
+
     if (rit_stato(a) == 3 && scelta==1){
         printf("L'attività è già in ritardo! Affrettati a completarla.\n");
         return 2;
@@ -506,20 +533,25 @@ int aggiorna_stato(attivita a, int scelta) {
 
 /*
  * Funzione: genera_report_settimanale
- * ---------------------------------------
+ * -----------------------------------
+ * Genera un report settimanale delle attività suddividendole in quattro categorie:
+ * - Attività della settimana corrente non scadute
+ * - Attività della settimana prossima
+ * - Attività delle settimane future (dopo la prossima)
+ * - Attività scadute
+ *
+ * Per ogni categoria, la funzione scorre la lista delle attività, confronta la data di scadenza
+ * con la data odierna, e stampa le attività corrispondenti.
  *
  * Parametri:
- *    l di tipo lista
+ *   l - Lista di attività da analizzare.
  *
- * Precondizioni:
- *    Nessuna
+ * Ritorna:
+ *   Void. Il report viene stampato direttamente su stdout.
  *
- * Postcondizioni:
- *    Non restituisce niente
- *
- * Effetti collaterali
- *     Stampa le attivita classificate in base alla settimana di scadenza
- *
+ * Nota:
+ *   La funzione utilizza funzioni di supporto per ottenere la data corrente,
+ *   calcolare la settimana dell'anno e confrontare date.
  */
 
 void genera_report_settimanale(lista l) {
@@ -579,20 +611,22 @@ void genera_report_settimanale(lista l) {
 
 /*
  * Funzione: chiedi_attivita_per_id
- * ---------------------------------------
+ * --------------------------------
+ * Richiede all'utente di inserire l'ID di un'attività presente nella lista,
+ * stampando la lista completa e ripetendo la richiesta finché non viene inserito
+ * un ID valido corrispondente a un'attività esistente.
  *
  * Parametri:
- *    l di tipo lista
+ *   l - Lista di attività in cui cercare l'attività con l'ID specificato.
  *
- * Precondizioni:
- *    l non deve essere vuota
+ * Ritorna:
+ *   L'attività corrispondente all'ID inserito dall'utente, oppure NULLATTIVITA
+ *   se la lista è vuota.
  *
- * Postcondizioni:
- *    Restituisce l'attivita con l'id inserito dall'utente
- *
- * Effetti collaterali
- *     Stampa messaggi su stdout e chiede all’utente di inserire
- *
+ * Nota:
+ *   La funzione utilizza la funzione stampa_lista per mostrare tutte le attività
+ *   e cerca l'attività tramite cerca_attivita_per_id.
+ *   Continua a chiedere l'ID finché non ne viene inserito uno valido.
  */
 
 attivita chiedi_attivita_per_id(lista l) {
@@ -618,21 +652,23 @@ attivita chiedi_attivita_per_id(lista l) {
 
 /*
  * Funzione: menu
- * ---------------------------------------
+ * --------------
+ * Gestisce l'interfaccia a menu per l'utente, consentendo di selezionare
+ * diverse operazioni sulle attività
+ * Il menu continua a essere mostrato finché l'utente non sceglie di uscire (0).
  *
  * Parametri:
- *    ultimo_id puntatore a intero
+ *   l          - Lista delle attività da gestire.
+ *   ultimo_id  - Puntatore all'intero contenente l'ultimo ID usato,
+ *                necessario per l'inserimento di nuove attività.
  *
- * Precondizioni:
- *    ultimo_id deve puntare a una variabile
+ * Ritorna:
+ *   Void. Le operazioni vengono eseguite direttamente e i risultati stampati.
  *
- * Postcondizioni:
- *    Non restituisce niente
- *
- * Effetti collaterali
- *     Stampa il menu del programma in cui l’utente può scegliere cosa fare,
- *     finché non sceglie 0 che equivale alla chiusura del programma.
- *
+ * Nota:
+ *   La funzione verifica che 'ultimo_id' sia un puntatore valido.
+ *   La lista delle attività viene liberata al termine (scelta 0).
+ *   Usa funzioni di supporto per ogni operazione (report, progresso, aggiornamento, ecc.).
  */
 
 void menu(lista l, int *ultimo_id) {
@@ -645,7 +681,7 @@ void menu(lista l, int *ultimo_id) {
     do {
         printf("\n=================MENU===================\n");
         printf("1. Report settimanale\n");
-        printf("2. Mostra stato avanzamento\n");
+        printf("2. Monitoraggio del progresso\n");
         printf("3. Aggiorna stato\n");
         printf("4. Inserisci nuova attivita\n");
 		printf("5. Rimuovi un attivita\n");
