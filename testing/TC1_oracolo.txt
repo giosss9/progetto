@@ -1,0 +1,19 @@
+#Output atteso del TC1 ultima riga numero di attivita atteso
+
+ID: 1
+Corso: Matematica
+Descrizione: Fare esercizi
+Scadenza: 22/06/2025
+Tempo stimato: 2 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+ID: 0
+Corso: Informatica
+Descrizione: Studiare programmazione
+Scadenza: 20/06/2025
+Tempo stimato: 12 ore
+Priorità: media
+Stato: non iniziata
+----------------------------------------
+2

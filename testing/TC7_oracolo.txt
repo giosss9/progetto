@@ -1,0 +1,36 @@
+#Output atteso del TC7 ultima riga numero di attivita atteso
+
+Stato aggiornato correttamente.
+Stato aggiornato correttamente.
+Stato aggiornato correttamente.
+L'attività è già in ritardo! Affrettati a completarla.
+
+Attività NON INIZIATE:
+
+--- Attività: Ripassare derivate ---
+Tempo stimato: 4 ore
+Data di scadenza:23/6/2025
+Stato: NON INIZIATA
+
+Attività IN CORSO:
+
+--- Attività: Preparare presentazione ---
+Tempo stimato: 6 ore
+Tempo trascorso: 0 minuti
+Stato: IN CORSO
+Progresso: [--------------------] 0%
+
+Attività COMPLETATE:
+
+--- Attività: Laboratorio Arduino ---
+Tempo stimato: 5 ore
+Data di scadenza:25/6/2025
+Stato: COMPLETATA
+
+Attività IN RITARDO:
+
+--- Attività: Scrivere tema ---
+Tempo stimato: 3 ore
+Data di scadenza:5/6/2025
+Stato: IN RITARDO
+4

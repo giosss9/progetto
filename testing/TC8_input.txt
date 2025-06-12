@@ -1,0 +1,21 @@
+#CASO DI TEST DEL REPORT SETTIMANALE
+
+#attivita settimana corrente
+Ripassare derivate;Matematica;14;06;2025;9;4;2
+Studiare programmazione;Informatica;14;06;2025;10;12;1
+Fare esercizi;Matematica;14;06;2025;10;3;1
+
+
+#attivita settimana prossima
+Preparare presentazione;Storia;20;06;2025;16;6;1
+Verifica inglese;Inglese;21;06;2025;11;2;0
+Studio gruppo;Fisica;17;06;2025;13;2;1
+
+
+#attivita settimane future
+Laboratorio Arduino;Tecnologia;25;06;2025;14;5;2
+Leggere capitolo 3;Letteratura;4;07;2025;15;3;0
+Progetto finale;Informatica;27;08;2025;10;10;2
+
+#attivita scaduta
+Scrivere tema;Italiano;15;06;2025;17;3;1

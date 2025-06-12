@@ -1,43 +1,103 @@
+// File main_testing
+
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include "../attivita.h"
+#include "../data.h"
+#include "../lista.h"
+#include "../utile.h"
 
-#include "attivita.h"
-#include "data.h"
-#include "lista.h"
-#include "utile.h"
-
-#define MAX_LINE 512
+# define M 20 //Costante che determina la lunghezza massima del nome dei file
+#define MAX_RIGA 512
 #define MAX 100
-# define M 20
 
+/*
+ * Funzione: confronta_file
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    file1 - nome del primo file da confrontare
+ *    file2 - nome del secondo file da confrontare
+ *
+ * Precondizioni:
+ *    I file devono esistere ed essere leggibili
+ *
+ * Postcondizioni:
+ *    Restituisce 1 se i file sono uguali, 0 altrimenti o se non sono apribili
+ *
+ */
 int confronta_file(const char* file1, const char* file2) {
     FILE* f1 = fopen(file1, "r");
     FILE* f2 = fopen(file2, "r");
 
     if (!f1 || !f2) {
-        fclose(f1);
-        fclose(f2);
-        return 0; // errore apertura file
+        if (f1) fclose(f1);
+        if (f2) fclose(f2);
+        return 0;
     }
 
-    int c1, c2;
-    do {
-        c1 = fgetc(f1);
-        c2 = fgetc(f2);
-        if (c1 != c2) {
+    char riga1[MAX_RIGA], riga2[MAX_RIGA];
+
+    while (1) {
+        // Leggi riga valida da f1
+        do {
+            if (!fgets(riga1, MAX_RIGA, f1)) riga1[0] = '\0';
+            char* p = riga1;
+            while (isspace(*p)) p++;  // salta spazi iniziali
+            if (*p == '#' || *p == '\0' || *p == '\n') riga1[0] = '\0';  // ignora riga
+        } while (riga1[0] == '\0' && !feof(f1));
+
+        // Leggi riga valida da f2
+        do {
+            if (!fgets(riga2, MAX_RIGA, f2)) riga2[0] = '\0';
+            char* p = riga2;
+            while (isspace(*p)) p++;
+            if (*p == '#' || *p == '\0' || *p == '\n') riga2[0] = '\0';
+        } while (riga2[0] == '\0' && !feof(f2));
+
+        // Confronta righe
+        if (strcmp(riga1, riga2) != 0) {
             fclose(f1);
             fclose(f2);
-            return 0; // file diversi
+            return 0;
         }
-    } while (c1 != EOF && c2 != EOF);
+
+        // Se entrambi sono finiti
+        if (feof(f1) && feof(f2)) break;
+    }
 
     fclose(f1);
     fclose(f2);
-    return 1; // file uguali
+    return 1;
 }
 
 
+/*
+ * Funzione: test_case_rimozione
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    tc_id - identificatore del test case (nome base dei file di input/output)
+ *    n     - numero atteso di attività dopo la rimozione
+ *
+ * Precondizioni:
+ *    tc_id!=NULL
+ *
+ * Postcondizioni:
+ *    Restituisce 1 se l'output coincide con l'oracolo
+ * 		e se il numero atteso di attività coincide con il numero di elementi della lista
+ * 		0 altrimenti
+ *
+ * Effetti collaterali
+ * 	  Stampa la lista e eventuali messaggi di errore sul file di output
+ *
+ */
+
 int test_case_rimozione(char *tc_id, int n){
+  	if(tc_id==NULL)
+          return 0;
+
 	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
 	int ris;
 	int num_attivita;
@@ -89,7 +149,27 @@ int test_case_rimozione(char *tc_id, int n){
 	return ris;
 }
 
-
+/*
+ * Funzione: test_case_report
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    tc_id - identificatore del test case
+ *    n     - numero atteso di attività nella lista
+ *
+ * Precondizioni:
+ *    Il file input deve esistere e contenere attività valide
+ *
+ * Postcondizioni:
+ * 	 Restituisce 1 se output e oracolo corrispondono
+ * 	  e se il numero atteso di attività coincide con il numero di elementi della lista
+ *    0 altrimenti
+ *
+ * Effetti collaterali:
+ *    Genera un report settimanale nel file di output,
+ * 	  confronta l'output con l'oracolo
+ *
+ */
 int test_case_report(char *tc_id, int n){
 	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
 	int ris;
@@ -147,6 +227,27 @@ int test_case_report(char *tc_id, int n){
 
 	return ris;
 }
+
+/*
+ * Funzione: test_case_mostra_progresso
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    tc_id - identificatore del test case
+ *    n     - numero atteso di attività nella lista
+ *
+ * Precondizioni:
+ *    Nessuna
+ *
+ * Postcondizioni:
+ *    Restituisce 1 se output e oracolo corrispondono
+ * 	  e se il numero di attivita coincide con n, altrimenti 0.
+ *
+ * Effetti collaterali:
+ *   Simula stati diversi delle attività,
+ * 	 mostra il progresso sul file di output e confronta l'output con l'oracolo
+ *
+ */
 
 int test_case_mostra_progresso(char *tc_id, int n){
 	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
@@ -216,6 +317,25 @@ int test_case_mostra_progresso(char *tc_id, int n){
 	return ris;
 }
 
+/*
+ * Funzione: test_case_progresso
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    tc_id - identificatore del test case
+ *    n     - ore da simulare come trascorse per il calcolo del progresso
+ *
+ * Precondizioni:
+ *    Nessuna
+ *
+ * Postcondizioni:
+ *   Restituisce 1 se output e oracolo corrispondono, altrimenti 0.
+ *
+ * Effetti collaterali:
+ * 	 Calcola il progresso di un’attività, presa dal file di input,
+ * 	 dopo n ore, lo stampa sul file di output e confronta l’output con l’oracolo.
+ *
+ */
 int test_case_progresso(char *tc_id, int n) {
     char input_fnome[M], output_fnome[M], oracolo_fnome[M];
     int ris;
@@ -230,12 +350,12 @@ int test_case_progresso(char *tc_id, int n) {
         return 0;
     }
 
-    char riga[MAX_LINE];
+    char riga[MAX_RIGA];
     int riga_num = 0;
     int id = 0;
     attivita test_att = NULLATTIVITA;
 
-    while (fgets(riga, MAX_LINE, input) != NULL) {
+    while (fgets(riga, MAX_RIGA, input) != NULL) {
         riga_num++;
         riga[strcspn(riga, "\r\n")] = 0;
         if (riga[0] == '\0' || riga[0] == '#') continue;
@@ -306,7 +426,28 @@ int test_case_progresso(char *tc_id, int n) {
     return ris;
 }
 
-
+/*
+ * Funzione: test_case_inserimento
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    tc_id - identificatore del test case
+ *    n     - numero atteso di attività caricate dalla lista
+ *
+ * Precondizioni:
+ *    Nessuna
+ *
+ * Postcondizioni:
+ * 	 Restituisce 1 se i file oracolo e output corrispondono e se
+ *   il numero di attività è quello atteso, 0 altrimenti
+ *
+ *
+ * Effetti collaterali:
+ * 	 Carica le attività in una lista dal file di input,
+ *   stampa la lista e eventuali messaggi di errore sul file tc_id_output.txt,
+ * 	 e confronta l’output con l’oracolo
+ *
+ */
 int test_case_inserimento(char *tc_id, int n){
    	char input_fnome[M], output_fnome[M], oracolo_fnome[M];
    	int ris;
@@ -359,8 +500,30 @@ int test_case_inserimento(char *tc_id, int n){
 }
 
 
-int main(int argc, char *argv[])
-{
+/*
+ * Funzione: main
+ * ---------------------------------------
+ *
+ * Parametri:
+ *    argc - numero di argomenti passati da linea di comando
+ *    argv - array di stringhe contenente i nomi dei file
+ *
+ *
+ * Precondizioni:
+ *    argc deve essere uguale a 3
+ *    argv deve contenere: (main_testing.c, test_suite.txt, risultati.txt)
+ *
+ * Postcondizioni:
+ *    Ritorna -1 se argc<3 e se i file non esistono. altrmenti 0
+ *
+ * Effetti collaterali:
+ *     Esegue i vari test_case aprendo il file test_suite per leggere i loro id,
+ *     scrive TCID "PASS"/"FAIL" nel file risultati per ogni caso
+ *
+ */
+
+int main(int argc, char *argv[]) {
+
    FILE *test_suite, *risultati;
    char tc_id[M];  // stringa contenente l'identificativo del test case
    int n, pass;
@@ -408,4 +571,6 @@ int main(int argc, char *argv[])
 
    fclose(test_suite);  // chiusura file di input
    fclose(risultati);         // chiusura file di output
+
+   return 0;
 }

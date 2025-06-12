@@ -1,0 +1,8 @@
+#Output atteso del TC3 ultima riga numero di attivita atteso
+
+Errore nei dati inseriti nella riga 4. Attivita non inserita.
+Errore nei dati inseriti nella riga 7. Attivita non inserita.
+Errore nei dati inseriti nella riga 10. Attivita non inserita.
+Errore nei dati inseriti nella riga 13. Attivita non inserita.
+Errore nei dati inseriti nella riga 16. Attivita non inserita.
+0

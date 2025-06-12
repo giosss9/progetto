@@ -1,0 +1,6 @@
+#Output atteso del TC5
+
+Stato aggiornato correttamente.
+Tempo trascorso: 2.0 ore
+Stato: IN CORSO
+Progresso: [#############-------] 66%

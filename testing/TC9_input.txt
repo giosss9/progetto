@@ -1,0 +1,7 @@
+#CASO DI TEST RIMOZIONE ATTIVITA "Leggere capitolo 3" che avrà id=3
+
+Studiare programmazione;Informatica;20;06;2025;10;12;1
+Fare esercizi;Matematica;22;06;2025;10;2;1
+Laboratorio Arduino;Tecnologia;25;06;2025;14;5;2
+Leggere capitolo 3;Letteratura;4;07;2025;15;3;0
+Progetto finale;Informatica;27;08;2025;10;10;2
